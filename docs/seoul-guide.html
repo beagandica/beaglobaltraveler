@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ Wanderly — Seoul Travel Guide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '✈️';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -30px;
+            right: -20px;
+            transform: rotate(-15deg);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+        .hero .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero .stat {
+            text-align: center;
+        }
+        .hero .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .hero .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Nav tabs */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            background: #161822;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #2a2d3a;
+        }
+        .nav button {
+            padding: 10px 24px;
+            border: 1px solid #2a2d3a;
+            border-radius: 24px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active {
+            background: #60a5fa;
+            color: #0f1117;
+            border-color: #60a5fa;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section.active { display: block; }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Map */
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            border: 1px solid #2a2d3a;
+        }
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .map-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid #2a2d3a;
+            border-radius: 20px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+        .filter-btn.active { background: #a78bfa; color: #0f1117; border-color: #a78bfa; }
+
+        /* Cards grid */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1);
+        }
+        .card-emoji {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        .card-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .card-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .card-tag {
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #2a2d3a;
+            color: #94a3b8;
+        }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e1b4b; color: #a78bfa; }
+        .card-tag.nightlife { background: #4a044e; color: #e879f9; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .card-must-order {
+            font-size: 0.85rem;
+            color: #60a5fa;
+            font-style: italic;
+        }
+        .card-transit {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #2a2d3a;
+        }
+
+        /* Timeline */
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #60a5fa, #a78bfa, #f472b6, #60a5fa);
+            border-radius: 3px;
+        }
+        .timeline-day {
+            margin-bottom: 40px;
+        }
+        .timeline-day-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 60px;
+            color: #60a5fa;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-left: 21px;
+            z-index: 1;
+            border: 3px solid #0f1117;
+        }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #a78bfa; }
+        .timeline-dot.food-stop { background: #f472b6; }
+        .timeline-content {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .timeline-place {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .timeline-detail {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .timeline-transit {
+            font-size: 0.8rem;
+            color: #60a5fa;
+            margin-top: 8px;
+        }
+
+        /* Phrases */
+        .phrases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+            margin: 24px auto 0;
+        }
+        .phrase-card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .phrase-korean {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+        .phrase-romanized {
+            font-size: 0.9rem;
+            color: #a78bfa;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .phrase-english {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        .footer span { color: #60a5fa; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .stats { gap: 20px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>✈️ Wanderly — Seoul</h1>
+    <p class="subtitle">Your AI travel companion's guide to the soul of South Korea</p>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Neighborhoods</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Restaurants</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Landmarks</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Nightlife</div>
+        </div>
+    </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+    <button class="active" onclick="showSection('map')">🗺️ Map</button>
+    <button onclick="showSection('food')">🍜 Food</button>
+    <button onclick="showSection('landmarks')">🏛️ Landmarks</button>
+    <button onclick="showSection('nightlife')">🌙 Nightlife</button>
+    <button onclick="showSection('itinerary')">📅 Itinerary</button>
+    <button onclick="showSection('phrases')">💬 Phrases</button>
+</div>
+
+<!-- Map Section -->
+<div id="sec-map" class="section active">
+    <h2 class="section-title">🗺️ Explore Seoul</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#a78bfa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#e879f9"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature / Views</span>
+    </div>
+</div>
+
+<!-- Food Section -->
+<div id="sec-food" class="section">
+    <h2 class="section-title">🍜 Where to Eat</h2>
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterCards('food', 'all', this)">All</button>
+        <button class="filter-btn" onclick="filterCards('food', '$', this)">$ Budget</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$', this)">$$ Mid</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$$', this)">$$$ Splurge</button>
+    </div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<!-- Landmarks Section -->
+<div id="sec-landmarks" class="section">
+    <h2 class="section-title">🏛️ Things to Do</h2>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<!-- Nightlife Section -->
+<div id="sec-nightlife" class="section">
+    <h2 class="section-title">🌙 After Dark</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<!-- Itinerary Section -->
+<div id="sec-itinerary" class="section">
+    <h2 class="section-title">📅 2-Day Seoul Itinerary</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by Wanderly ✈️ — foodie + culture vibe</p>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<!-- Phrases Section -->
+<div id="sec-phrases" class="section">
+    <h2 class="section-title">💬 Survival Korean</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:8px;">The phrases that'll make locals smile</p>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built with ✈️ by <span>Wanderly</span> — Happy wandering!<br>
+    <small>Copilot Agent + Skill Demo — Wanderly Travel Planner</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const foodData = [
+    { name: "Gwangjang Market 광장마켓", cat: "Street food", hood: "Jongno", budget: "$", desc: "The grandmothers here have been making bindaetteok for decades. The energy is electric.", mustOrder: "Bindaetteok, mayak gimbap, yukhoe", lat: 37.5701, lng: 126.9996, emoji: "🥘" },
+    { name: "Tosokchon Samgyetang 토속촌", cat: "Korean traditional", hood: "Jongno", budget: "$$", desc: "The line is worth it. Ginseng chicken soup that warms your soul.", mustOrder: "Samgyetang (ginseng chicken soup)", lat: 37.5788, lng: 126.9717, emoji: "🍲" },
+    { name: "Maple Tree House 단풍나무집", cat: "Korean BBQ", hood: "Itaewon", budget: "$$$", desc: "Premium galbi in a gorgeous setting. This is the BBQ experience.", mustOrder: "Yangnyeom galbi (marinated short ribs)", lat: 37.5341, lng: 126.9948, emoji: "🥩" },
+    { name: "Tongin Market 통인시장", cat: "Street food", hood: "Jongno", budget: "$", desc: "Buy brass coins, fill your tray from different stalls. It's a lunch adventure.", mustOrder: "Tteokbokki, japchae, fried items", lat: 37.5759, lng: 126.9689, emoji: "🪙" },
+    { name: "Cafe Onion 카페어니언", cat: "Cafe", hood: "Ikseon-dong", budget: "$$", desc: "A converted hanok turned into the most photogenic cafe in Seoul.", mustOrder: "Pandoro, cream latte", lat: 37.5745, lng: 126.9880, emoji: "☕" },
+    { name: "Myeongdong Kyoja 명동교자", cat: "Noodles", hood: "Myeongdong", budget: "$", desc: "Cash only, no-frills, legendary kalguksu. The dumplings are enormous.", mustOrder: "Kalguksu, mandu", lat: 37.5636, lng: 126.9852, emoji: "🍜" },
+    { name: "Line Friends Store Cafe", cat: "Cafe", hood: "Gangnam", budget: "$$", desc: "For the K-pop and character culture experience. Fun, not serious dining.", mustOrder: "Character-themed drinks", lat: 37.5110, lng: 127.0590, emoji: "🧸" },
+    { name: "Noryangjin Fish Market 노량진", cat: "Seafood", hood: "Yeongdeungpo", budget: "$$", desc: "Pick your fish alive, they prepare it upstairs. Freshest sashimi in the city.", mustOrder: "Live sashimi, spicy seafood stew", lat: 37.5133, lng: 126.9401, emoji: "🐟" },
+    { name: "Jungsik 정식", cat: "Fine dining", hood: "Gangnam", budget: "$$$", desc: "Modern Korean tasting menu. Michelin-starred. A special occasion place.", mustOrder: "Tasting menu", lat: 37.5236, lng: 127.0187, emoji: "⭐" },
+    { name: "Isaac Toast", cat: "Breakfast", hood: "Multiple", budget: "$", desc: "Korea's famous egg toast chain. Sweet, savory, perfect hangover food.", mustOrder: "Ham cheese egg toast", lat: 37.5563, lng: 126.9368, emoji: "🍞" }
+];
+
+const landmarkData = [
+    { name: "Gyeongbokgung Palace 경복궁", cat: "Culture", hood: "Jongno", budget: "$", time: "2-3 hours", desc: "The grandest of Seoul's five palaces. Rent a hanbok for free entry and amazing photos.", lat: 37.5796, lng: 126.9770, emoji: "🏯" },
+    { name: "N Seoul Tower 남산타워", cat: "Views", hood: "Namsan", budget: "$$", time: "1-2 hours", desc: "Take the cable car up for sunset views over the entire city.", lat: 37.5512, lng: 126.9882, emoji: "🗼" },
+    { name: "Bukchon Hanok Village 북촌한옥마을", cat: "Culture", hood: "Bukchon", budget: "Free", time: "1-2 hours", desc: "Wander through traditional Korean houses on hilly streets.", lat: 37.5824, lng: 126.9848, emoji: "🏘️" },
+    { name: "COEX Starfield Library", cat: "Culture", hood: "Gangnam", budget: "Free", time: "1 hour", desc: "A massive open library inside a mall. The bookshelves are two stories tall.", lat: 37.5104, lng: 127.0593, emoji: "📚" },
+    { name: "Changdeokgung Secret Garden 창덕궁", cat: "Nature", hood: "Jongno", budget: "$$", time: "2 hours", desc: "A UNESCO World Heritage palace with a hidden garden. Guided tours only.", lat: 37.5794, lng: 126.9910, emoji: "🌿" },
+    { name: "Cheonggyecheon Stream 청계천", cat: "Walk", hood: "Central", budget: "Free", time: "1 hour", desc: "A restored urban stream running through downtown. Beautiful at night.", lat: 37.5696, lng: 126.9784, emoji: "💧" },
+    { name: "Lotte World Tower", cat: "Views", hood: "Songpa", budget: "$$$", time: "1-2 hours", desc: "555 meters high, glass floor sky deck. For the brave ones.", lat: 37.5126, lng: 127.1026, emoji: "🏙️" },
+    { name: "War Memorial of Korea", cat: "Museum", hood: "Itaewon", budget: "Free", time: "2-3 hours", desc: "Powerful, well-done museum. The outdoor exhibits are impressive.", lat: 37.5360, lng: 126.9772, emoji: "🎖️" },
+    { name: "Dongdaemun Design Plaza (DDP)", cat: "Architecture", hood: "Dongdaemun", budget: "Free", time: "1 hour", desc: "Zaha Hadid's alien spaceship building. Night markets outside on weekends.", lat: 37.5673, lng: 127.0095, emoji: "🛸" },
+    { name: "Namsan Cable Car", cat: "Scenic", hood: "Namsan", budget: "$$", time: "30 min", desc: "Ride up to N Seoul Tower. Better than hiking if you're short on time.", lat: 37.5562, lng: 126.9816, emoji: "🚡" }
+];
+
+const nightlifeData = [
+    { name: "Hongdae Club Street", cat: "Clubs/bars", hood: "Hongdae", budget: "$-$$", desc: "The epicenter of Seoul nightlife. Live music, dance clubs, street performers until dawn.", lat: 37.5563, lng: 126.9237, emoji: "🎵" },
+    { name: "Itaewon Pub Mile", cat: "Bars", hood: "Itaewon", budget: "$$", desc: "International crowd, craft cocktails, rooftop bars. More chill than Hongdae.", lat: 37.5340, lng: 126.9946, emoji: "🍸" },
+    { name: "Pojangmacha 포장마차", cat: "Street tents", hood: "Multiple", budget: "$", desc: "Plastic tent street bars serving soju and fried chicken. The real Seoul experience.", lat: 37.5660, lng: 126.9784, emoji: "⛺" },
+    { name: "Soap Seoul", cat: "Club", hood: "Itaewon", budget: "$$", desc: "Techno and house music. Seoul's answer to Berlin clubs.", lat: 37.5345, lng: 126.9910, emoji: "🎧" },
+    { name: "Seoul Forest Wine Bar", cat: "Wine", hood: "Seongsu", budget: "$$$", desc: "Trendy natural wine spot in Seoul's Brooklyn neighborhood.", lat: 37.5445, lng: 127.0370, emoji: "🍷" }
+];
+
+const phrasesData = [
+    { korean: "안녕하세요", roman: "annyeonghaseyo", english: "Hello" },
+    { korean: "감사합니다", roman: "gamsahamnida", english: "Thank you" },
+    { korean: "맛있어요!", roman: "mashisseoyo!", english: "Delicious!" },
+    { korean: "이거 얼마예요?", roman: "igeo eolmayeyo?", english: "How much is this?" },
+    { korean: "하나 더 주세요", roman: "hana deo juseyo", english: "One more please" },
+    { korean: "건배!", roman: "geonbae!", english: "Cheers!" },
+    { korean: "어디예요?", roman: "eodiyeyo?", english: "Where is...?" },
+    { korean: "계산해 주세요", roman: "gyesanhae juseyo", english: "The bill please" }
+];
+
+const itineraryData = [
+    {
+        day: "Day 1 — Old Seoul & Street Food",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "Gyeongbokgung Palace 경복궁", detail: "Rent a hanbok at shops nearby for free entry. Watch the guard changing ceremony at 10AM.", transit: "🚇 Line 3, Anguk Station Exit 1", emoji: "🏯" },
+            { time: "11:30 AM", period: "morning", place: "Bukchon Hanok Village", detail: "Walk uphill through traditional houses. Best photo spots on Bukchon 5-gil and 6-gil.", transit: "🚶 10 min walk north from the palace", emoji: "🏘️" },
+            { time: "12:30 PM", period: "food-stop", place: "🍜 Lunch: Tosokchon Samgyetang", detail: "Join the line — it moves fast. The ginseng chicken soup is the perfect midday reset.", transit: "🚶 15 min walk or 🚇 Line 3 one stop", emoji: "🍲" },
+            { time: "2:00 PM", period: "afternoon", place: "Ikseon-dong Alley", detail: "Tiny hanok-lined alleys full of boutique cafes and shops. Hit Cafe Onion for the pandoro.", transit: "🚇 Line 3, Jongno 3-ga Station Exit 4", emoji: "☕" },
+            { time: "4:00 PM", period: "afternoon", place: "Gwangjang Market 광장마켓", detail: "The mayak gimbap (addictive mini rice rolls) and bindaetteok are non-negotiable.", transit: "🚶 8 min walk east", emoji: "🥘" },
+            { time: "6:30 PM", period: "evening", place: "Cheonggyecheon Stream", detail: "Walk along the illuminated stream as the city lights up. Perfect sunset stroll.", transit: "🚶 5 min walk south from market", emoji: "💧" },
+            { time: "8:00 PM", period: "food-stop", place: "🍽️ Dinner: Myeongdong Kyoja", detail: "Cash only! The kalguksu is legendary and the mandu are the size of your fist.", transit: "🚇 Line 4, Myeongdong Station Exit 8", emoji: "🍜" },
+            { time: "9:30 PM", period: "evening", place: "N Seoul Tower (night views)", detail: "Take the Namsan cable car up. The city view at night is breathtaking. Love locks optional.", transit: "🚌 Bus 05 from Myeongdong or cable car", emoji: "🗼" }
+        ]
+    },
+    {
+        day: "Day 2 — Modern Seoul & K-Culture",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "Isaac Toast (breakfast)", detail: "Grab a ham cheese egg toast. Sweet, savory, and the perfect fuel for the day.", transit: "🚇 Nearest station to your hotel", emoji: "🍞" },
+            { time: "10:00 AM", period: "morning", place: "Changdeokgung Secret Garden", detail: "Book the English guided tour in advance. The garden is magical in any season.", transit: "🚇 Line 3, Anguk Station Exit 3", emoji: "🌿" },
+            { time: "12:30 PM", period: "food-stop", place: "🍜 Lunch: Tongin Market", detail: "Buy brass coins at the entrance, then fill your tray from the different stalls. Adventure lunch!", transit: "🚇 Line 3, Gyeongbokgung Station Exit 2", emoji: "🪙" },
+            { time: "2:00 PM", period: "afternoon", place: "COEX Starfield Library", detail: "The two-story bookshelves are unreal. Great for photos and a cool-down break.", transit: "🚇 Line 2, Samseong Station, underground connected", emoji: "📚" },
+            { time: "4:00 PM", period: "afternoon", place: "Gangnam area exploration", detail: "Walk the main boulevard, check K-pop shops, or visit Line Friends Store for fun merch.", transit: "🚶 Walk from COEX or 🚇 Line 2", emoji: "🧸" },
+            { time: "6:00 PM", period: "evening", place: "Dongdaemun Design Plaza (DDP)", detail: "Zaha Hadid's spaceship building. If it's a weekend, the night market outside is a bonus.", transit: "🚇 Line 2/4/5, Dongdaemun History & Culture Park Station", emoji: "🛸" },
+            { time: "7:30 PM", period: "food-stop", place: "🍽️ Dinner: Maple Tree House", detail: "Splurge night! The yangnyeom galbi is worth every won. Make a reservation.", transit: "🚇 Line 6, Itaewon Station Exit 2", emoji: "🥩" },
+            { time: "9:30 PM", period: "evening", place: "Hongdae nightlife", detail: "Street performers, live music venues, clubs. Or find a pojangmacha for soju and fried chicken.", transit: "🚇 Line 2, Hongik University Station Exit 9", emoji: "🎵" }
+        ]
+    }
+];
+
+// ============================================================
+// MAP
+// ============================================================
+const map = L.map('map', { scrollWheelZoom: true }).setView([37.5665, 126.9780], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+}).addTo(map);
+
+function addMarkers(data, color, group) {
+    data.forEach(item => {
+        if (!item.lat) return;
+        const icon = L.divIcon({
+            html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0f1117;box-shadow:0 2px 8px rgba(0,0,0,0.4)">${item.emoji}</div>`,
+            iconSize: [28, 28],
+            className: ''
+        });
+        L.marker([item.lat, item.lng], { icon })
+            .bindPopup(`
+                <div style="font-family:Segoe UI,sans-serif;min-width:200px">
+                    <b style="font-size:14px">${item.emoji} ${item.name}</b><br>
+                    <span style="color:#666;font-size:12px">${item.cat} · ${item.hood} · ${item.budget}</span><br>
+                    <p style="margin:6px 0;font-size:13px">${item.desc}</p>
+                    ${item.mustOrder ? `<em style="color:#3b82f6;font-size:12px">Must try: ${item.mustOrder}</em>` : ''}
+                    ${item.time ? `<span style="color:#888;font-size:12px">⏱ ${item.time}</span>` : ''}
+                </div>
+            `)
+            .addTo(map);
+    });
+}
+
+addMarkers(foodData, '#fbbf24', 'food');
+addMarkers(landmarkData, '#a78bfa', 'culture');
+addMarkers(nightlifeData, '#e879f9', 'nightlife');
+
+// ============================================================
+// CARDS
+// ============================================================
+function budgetClass(b) {
+    if (b === '$') return 'budget-low';
+    if (b === '$$') return 'budget-mid';
+    return 'budget-high';
+}
+
+function catClass(cat) {
+    const foodCats = ['Street food','Korean BBQ','Korean traditional','Noodles','Cafe','Seafood','Fine dining','Breakfast','Cafe/themed'];
+    const cultureCats = ['Culture','Museum','Architecture','Walk','Scenic','Views'];
+    const natureCats = ['Nature'];
+    if (foodCats.includes(cat)) return 'food';
+    if (cultureCats.includes(cat)) return 'culture';
+    if (natureCats.includes(cat)) return 'nature';
+    return 'nightlife';
+}
+
+function renderCards(containerId, data, showMustOrder = false, showTime = false) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = data.map(item => `
+        <div class="card" data-budget="${item.budget}">
+            <div class="card-emoji">${item.emoji}</div>
+            <div class="card-name">${item.name}</div>
+            <div class="card-meta">
+                <span class="card-tag ${catClass(item.cat)}">${item.cat}</span>
+                <span class="card-tag">${item.hood}</span>
+                <span class="card-tag ${budgetClass(item.budget)}">${item.budget}</span>
+                ${showTime && item.time ? `<span class="card-tag">⏱ ${item.time}</span>` : ''}
+            </div>
+            <div class="card-desc">${item.desc}</div>
+            ${showMustOrder && item.mustOrder ? `<div class="card-must-order">🔥 Must try: ${item.mustOrder}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+renderCards('food-cards', foodData, true);
+renderCards('landmark-cards', landmarkData, false, true);
+renderCards('nightlife-cards', nightlifeData);
+
+// ============================================================
+// FILTERS
+// ============================================================
+function filterCards(section, budget, btn) {
+    const container = document.getElementById(`${section}-cards`);
+    const cards = container.querySelectorAll('.card');
+    cards.forEach(card => {
+        if (budget === 'all' || card.dataset.budget === budget) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+// ============================================================
+// TIMELINE
+// ============================================================
+function renderTimeline() {
+    const container = document.getElementById('timeline');
+    container.innerHTML = itineraryData.map(day => `
+        <div class="timeline-day">
+            <div class="timeline-day-header">${day.day}</div>
+            ${day.items.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-dot ${item.period}"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${item.time}</div>
+                        <div class="timeline-place">${item.emoji} ${item.place}</div>
+                        <div class="timeline-detail">${item.detail}</div>
+                        <div class="timeline-transit">${item.transit}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+}
+renderTimeline();
+
+// ============================================================
+// PHRASES
+// ============================================================
+function renderPhrases() {
+    const container = document.getElementById('phrases-grid');
+    container.innerHTML = phrasesData.map(p => `
+        <div class="phrase-card">
+            <div class="phrase-korean">${p.korean}</div>
+            <div class="phrase-romanized">${p.roman}</div>
+            <div class="phrase-english">${p.english}</div>
+        </div>
+    `).join('');
+}
+renderPhrases();
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`sec-${name}`).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (name === 'map') {
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+}
+</script>
+</body>
+</html>
