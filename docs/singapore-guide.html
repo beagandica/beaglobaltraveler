@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ beaglobaltraveler | Singapore Travel Guide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1117; color: #e4e4e7; line-height: 1.6; }
+        .hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 60px 40px; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: '✈️'; position: absolute; font-size: 200px; opacity: 0.05; top: -30px; right: -20px; transform: rotate(-15deg); }
+        .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 8px; background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero .subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 24px; }
+        .hero .stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .hero .stat { text-align: center; }
+        .hero .stat-number { font-size: 2rem; font-weight: 700; color: #60a5fa; }
+        .hero .stat-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .nav { display: flex; justify-content: center; gap: 8px; padding: 20px; background: #161822; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #2a2d3a; }
+        .nav button { padding: 10px 24px; border: 1px solid #2a2d3a; border-radius: 24px; background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active { background: #60a5fa; color: #0f1117; border-color: #60a5fa; font-weight: 600; }
+        .section { display: none; padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+        .section.active { display: block; }
+        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 24px; text-align: center; }
+        #map { width: 100%; height: 500px; border-radius: 16px; border: 1px solid #2a2d3a; }
+        .map-legend { display: flex; justify-content: center; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+        .map-legend span { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: #94a3b8; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 20px; border: 1px solid #2a2d3a; border-radius: 20px; background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.85rem; transition: all 0.3s; }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 16px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .card:hover { border-color: #60a5fa; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1); }
+        .card-emoji { font-size: 2rem; margin-bottom: 12px; }
+        .card-name { font-size: 1.15rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+        .card-meta { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .card-tag { font-size: 0.78rem; padding: 3px 10px; border-radius: 12px; background: #2a2d3a; color: #94a3b8; }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e3a5f; color: #60a5fa; }
+        .card-tag.nightlife { background: #4a0e0e; color: #f87171; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; }
+        .card-must-order { font-size: 0.85rem; color: #60a5fa; font-style: italic; }
+        .card-transit { font-size: 0.8rem; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2d3a; }
+        .timeline { max-width: 800px; margin: 0 auto; position: relative; }
+        .timeline::before { content: ''; position: absolute; left: 30px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa); border-radius: 3px; }
+        .timeline-day { margin-bottom: 40px; }
+        .timeline-day-header { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; padding-left: 60px; color: #60a5fa; }
+        .timeline-item { display: flex; gap: 20px; margin-bottom: 16px; align-items: flex-start; }
+        .timeline-dot { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; margin-top: 4px; margin-left: 21px; z-index: 1; border: 3px solid #0f1117; }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
+        .timeline-content { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; flex: 1; }
+        .timeline-time { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .timeline-place { font-size: 1.05rem; font-weight: 600; color: #f1f5f9; }
+        .timeline-detail { font-size: 0.88rem; color: #94a3b8; margin-top: 4px; }
+        .timeline-transit { font-size: 0.8rem; color: #60a5fa; margin-top: 8px; }
+        .phrases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 900px; margin: 24px auto 0; }
+        .phrase-card { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; text-align: center; }
+        .phrase-local { font-size: 1.8rem; margin-bottom: 4px; }
+        .phrase-romanized { font-size: 0.9rem; color: #38bdf8; font-style: italic; margin-bottom: 8px; }
+        .phrase-english { font-size: 0.85rem; color: #64748b; }
+        .footer { text-align: center; padding: 40px; color: #475569; font-size: 0.9rem; }
+        .footer span { color: #60a5fa; }
+        @media (max-width: 768px) { .hero h1 { font-size: 2rem; } .hero .stats { gap: 20px; } .cards { grid-template-columns: 1fr; } .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; } }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>✈️ beaglobaltraveler | Singapore</h1>
+    <p class="subtitle">Your AI travel companion's guide to the garden city</p>
+    <div class="stats">
+        <div class="stat"><div class="stat-number">8</div><div class="stat-label">Neighborhoods</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Restaurants</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Landmarks</div></div>
+        <div class="stat"><div class="stat-number">5</div><div class="stat-label">Nightlife</div></div>
+    </div>
+</div>
+
+<div class="nav">
+    <button class="active" onclick="showSection('map')">🗺️ Map</button>
+    <button onclick="showSection('food')">🍜 Food</button>
+    <button onclick="showSection('landmarks')">🏛️ Landmarks</button>
+    <button onclick="showSection('nightlife')">🌃 Nightlife</button>
+    <button onclick="showSection('itinerary')">📅 Itinerary</button>
+    <button onclick="showSection('phrases')">💬 Phrases</button>
+</div>
+
+<div id="map-section" class="section active">
+    <h2 class="section-title">🗺️ Explore Singapore</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#60a5fa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature</span>
+    </div>
+</div>
+
+<div id="food-section" class="section">
+    <h2 class="section-title">🍜 Where to Eat</h2>
+    <div class="filter-bar" id="food-filters"></div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<div id="landmarks-section" class="section">
+    <h2 class="section-title">🏛️ Landmarks & Attractions</h2>
+    <div class="filter-bar" id="landmark-filters"></div>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<div id="nightlife-section" class="section">
+    <h2 class="section-title">🌃 Nightlife</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<div id="itinerary-section" class="section">
+    <h2 class="section-title">📅 2-Day Singapore Itinerary</h2>
+    <p style="text-align:center;color:#94a3b8;margin-bottom:32px;">Curated by beaglobaltraveler ✈️ , foodie + culture vibe</p>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div id="phrases-section" class="section">
+    <h2 class="section-title">💬 Survival Singlish</h2>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> ·
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> ·
+    <a href="index.html" style="color:#60a5fa">All Cities</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const foodData = [
+    { name: "Liao Fan Soya Sauce Chicken Rice", cat: "Hawker", hood: "Chinatown", budget: "$", desc: "The world's cheapest Michelin-starred meal. Tender soy sauce chicken over fragrant rice for about $3.", mustOrder: "Soya sauce chicken rice", lat: 1.2816, lng: 103.8448, emoji: "🍗" },
+    { name: "Maxwell Food Centre", cat: "Hawker centre", hood: "Chinatown", budget: "$", desc: "Home to dozens of legendary stalls in one hawker centre. Come hungry, try everything.", mustOrder: "Tian Tian chicken rice, Zhen Zhen porridge", lat: 1.2804, lng: 103.8448, emoji: "🍜" },
+    { name: "Jumbo Seafood", cat: "Seafood", hood: "Clarke Quay", budget: "$$-$$$", desc: "The chili crab institution. Messy, spicy, sweet, and absolutely essential. Get mantou buns to soak up the sauce.", mustOrder: "Chili crab with mantou buns", lat: 1.2884, lng: 103.8467, emoji: "🦀" },
+    { name: "Tekka Centre", cat: "Hawker centre", hood: "Little India", budget: "$", desc: "The best Indian food hawker centre. Biryani, roti prata, fish head curry, all under one roof.", mustOrder: "Roti prata, fish head curry, biryani", lat: 1.3065, lng: 103.8501, emoji: "🍛" },
+    { name: "328 Katong Laksa", cat: "Noodles", hood: "Katong", budget: "$", desc: "Rich, coconut-milk based laksa with prawns and fishcake. Served with a spoon only, noodles are pre-cut.", mustOrder: "Katong laksa", lat: 1.3049, lng: 103.9050, emoji: "🍜" },
+    { name: "Burnt Ends", cat: "Fine dining", hood: "Chinatown", budget: "$$$", desc: "Australian-style wood-fired modern cuisine. One Michelin star, creative small plates from the fire.", mustOrder: "Pulled pork brioche, marrow, king crab", lat: 1.2800, lng: 103.8440, emoji: "🔥" },
+    { name: "Tiong Bahru Bakery", cat: "Bakery", hood: "Tiong Bahru", budget: "$$", desc: "French-inspired bakery in a charming neighborhood. The kouign-amann is buttery perfection.", mustOrder: "Kouign-amann, croissant, flat white", lat: 1.2840, lng: 103.8310, emoji: "🥐" },
+    { name: "Zam Zam", cat: "Indian-Muslim", hood: "Kampong Glam", budget: "$", desc: "Murtabak (stuffed roti) across from Sultan Mosque since 1908. Crispy, stuffed with mutton or chicken.", mustOrder: "Mutton murtabak", lat: 1.3025, lng: 103.8591, emoji: "🫓" },
+    { name: "Old Airport Road Food Centre", cat: "Hawker centre", hood: "Dakota", budget: "$", desc: "Locals' favorite hawker centre away from tourist areas. Over 150 stalls, everything is good.", mustOrder: "Fried hokkien mee, satay, rojak", lat: 1.3107, lng: 103.8850, emoji: "🍢" },
+    { name: "Atlas", cat: "Bar/restaurant", hood: "Bugis", budget: "$$$", desc: "Art Deco gin palace with one of the world's largest gin collections. The lobby alone is worth the visit.", mustOrder: "Gin and tonic flight, champagne", lat: 1.2998, lng: 103.8555, emoji: "🍸" }
+];
+
+const landmarkData = [
+    { name: "Gardens by the Bay", cat: "Nature", hood: "Marina Bay", budget: "Free-$$", time: "2-3 hours", desc: "Supertree Grove is free and magical at night during the light show. Cloud Forest and Flower Dome are paid but stunning.", lat: 1.2816, lng: 103.8636, emoji: "🌳" },
+    { name: "Marina Bay Sands SkyPark", cat: "Views", hood: "Marina Bay", budget: "$$", time: "1 hour", desc: "The iconic rooftop observation deck. The infinity pool is hotel guests only, but the SkyPark is open to all.", lat: 1.2834, lng: 103.8607, emoji: "🏙️" },
+    { name: "Merlion Park", cat: "Iconic", hood: "Marina Bay", budget: "Free", time: "30 min", desc: "The half-lion, half-fish statue spouting water. Quick photo stop with Marina Bay Sands in the background.", lat: 1.2868, lng: 103.8545, emoji: "🦁" },
+    { name: "Sultan Mosque", cat: "Culture", hood: "Kampong Glam", budget: "Free", time: "30 min", desc: "Beautiful golden-domed mosque. The surrounding Haji Lane is Instagram gold with colorful murals.", lat: 1.3025, lng: 103.8591, emoji: "🕌" },
+    { name: "Singapore Botanic Gardens", cat: "Nature", hood: "Tanglin", budget: "Free", time: "2-3 hours", desc: "UNESCO World Heritage Site. The National Orchid Garden (paid) has over 1,000 species.", lat: 1.3138, lng: 103.8159, emoji: "🌺" },
+    { name: "Jewel Changi Airport", cat: "Architecture", hood: "Changi", budget: "Free", time: "1-2 hours", desc: "The world's best airport attraction. A 40-meter indoor waterfall surrounded by a forest. Worth a visit even without flying.", lat: 1.3602, lng: 103.9894, emoji: "💎" },
+    { name: "Sentosa Island", cat: "Leisure", hood: "Sentosa", budget: "$$-$$$", time: "Full day", desc: "Universal Studios, S.E.A. Aquarium, Siloso Beach. Family-friendly resort island connected by monorail.", lat: 1.2494, lng: 103.8303, emoji: "🏝️" },
+    { name: "Sri Mariamman Temple", cat: "Culture", hood: "Chinatown", budget: "Free", time: "30 min", desc: "Singapore's oldest Hindu temple with an ornate gopuram (entrance tower). In the heart of Chinatown.", lat: 1.2827, lng: 103.8451, emoji: "🛕" },
+    { name: "National Gallery Singapore", cat: "Art", hood: "Civic District", budget: "$$", time: "2-3 hours", desc: "Southeast Asian art collection in two beautifully restored colonial buildings. The rooftop bar has city views.", lat: 1.2907, lng: 103.8514, emoji: "🖼️" },
+    { name: "Night Safari", cat: "Nature", hood: "Mandai", budget: "$$", time: "3 hours", desc: "The world's first nocturnal zoo. Tram rides through habitats, walking trails, creature encounters in the dark.", lat: 1.4024, lng: 103.7890, emoji: "🦉" }
+];
+
+const nightlifeData = [
+    { name: "Clarke Quay", cat: "Bars/clubs", hood: "Clarke Quay", budget: "$$-$$$", desc: "Singapore's main nightlife strip along the river. Clubs, bars, and restaurants lit up with colorful lights.", lat: 1.2884, lng: 103.8467, emoji: "🌃" },
+    { name: "Atlas", cat: "Gin bar", hood: "Bugis", budget: "$$$", desc: "Soaring Art Deco lobby with the tallest gin tower in the world. A destination bar, not just a drink stop.", lat: 1.2998, lng: 103.8555, emoji: "🍸" },
+    { name: "Lau Pa Sat Late Night Satay", cat: "Food/drinks", hood: "CBD", budget: "$", desc: "After-hours satay stalls on Boon Tat Street. Cold Tiger beers and smoky skewers under the stars.", lat: 1.2806, lng: 103.8504, emoji: "🍢" },
+    { name: "Zouk", cat: "Club", hood: "Clarke Quay", budget: "$$", desc: "One of Asia's legendary nightclubs. Multiple rooms, top DJs, open until very late on weekends.", lat: 1.2884, lng: 103.8460, emoji: "🎧" },
+    { name: "28 HongKong Street", cat: "Speakeasy", hood: "Clarke Quay", budget: "$$-$$$", desc: "No sign outside, world-ranked cocktail bar inside. Ask for a recommendation and trust the bartender.", lat: 1.2878, lng: 103.8460, emoji: "🤫" }
+];
+
+const itineraryData = [
+    {
+        day: "Day 1: Hawker Food & Cultural Districts",
+        items: [
+            { time: "8:30 AM", period: "morning", place: "Tiong Bahru Bakery", detail: "Start with a buttery kouign-amann and flat white in Singapore's most charming neighborhood.", transit: "🚇 MRT to Tiong Bahru Station", emoji: "🥐" },
+            { time: "10:00 AM", period: "morning", place: "Chinatown & Sri Mariamman Temple", detail: "Explore the colorful shophouses and visit Singapore's oldest Hindu temple with its ornate entrance tower.", transit: "🚇 MRT to Chinatown Station", emoji: "🛕" },
+            { time: "11:30 AM", period: "morning", place: "Liao Fan Soya Sauce Chicken Rice", detail: "The world's cheapest Michelin star. Tender soy sauce chicken for about $3. The queue moves fast.", transit: "🚶 Walk to Chinatown Complex", emoji: "🍗" },
+            { time: "1:00 PM", period: "food-stop", place: "🍜 Lunch: Maxwell Food Centre", detail: "Multiple legendary stalls under one roof. Tian Tian chicken rice and Zhen Zhen porridge are musts.", transit: "🚶 5 min walk from Chinatown Complex", emoji: "🍜" },
+            { time: "2:30 PM", period: "afternoon", place: "Kampong Glam & Haji Lane", detail: "Street art, indie boutiques, and the beautiful Sultan Mosque. Grab a murtabak at Zam Zam.", transit: "🚇 MRT to Bugis Station, 5 min walk", emoji: "🕌" },
+            { time: "4:30 PM", period: "afternoon", place: "Little India & Tekka Centre", detail: "Colorful streets, flower garlands, spice shops. Tekka Centre has the best roti prata and biryani.", transit: "🚇 MRT to Little India Station", emoji: "🍛" },
+            { time: "6:30 PM", period: "evening", place: "Marina Bay Sands SkyPark", detail: "Sunset views from the iconic rooftop. The skyline lights up as the sun goes down.", transit: "🚇 MRT to Bayfront Station", emoji: "🏙️" },
+            { time: "7:30 PM", period: "food-stop", place: "🍽️ Dinner: Jumbo Seafood", detail: "The chili crab with mantou buns. Messy, spicy, sweet, and absolutely essential Singapore eating.", transit: "🚇 MRT to Clarke Quay Station", emoji: "🦀" },
+            { time: "9:30 PM", period: "evening", place: "Gardens by the Bay Light Show", detail: "The Supertree Grove light and sound show is free every night at 7:45 and 8:45 PM. Magical.", transit: "🚶 Walk from Marina Bay area", emoji: "🌳" }
+        ]
+    },
+    {
+        day: "Day 2: Nature, Art & Night Safari",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "Singapore Botanic Gardens", detail: "UNESCO World Heritage Site. The National Orchid Garden has over 1,000 species. Cool morning visit is best.", transit: "🚇 MRT to Botanic Gardens Station", emoji: "🌺" },
+            { time: "11:00 AM", period: "morning", place: "National Gallery Singapore", detail: "Southeast Asian art in two stunning colonial buildings. The rooftop bar has panoramic city views.", transit: "🚇 MRT to City Hall Station", emoji: "🖼️" },
+            { time: "1:00 PM", period: "food-stop", place: "🍜 Lunch: 328 Katong Laksa", detail: "Rich coconut-milk laksa with prawns and fishcake. Noodles are pre-cut so you eat with a spoon only.", transit: "🚇 MRT to Marine Parade/taxi to Katong", emoji: "🍜" },
+            { time: "2:30 PM", period: "afternoon", place: "Jewel Changi Airport", detail: "Yes, visiting an airport on purpose. The 40-meter indoor waterfall is surrounded by a forest. It's stunning.", transit: "🚇 MRT East-West Line to Changi Airport", emoji: "💎" },
+            { time: "4:30 PM", period: "afternoon", place: "Old Airport Road Food Centre", detail: "The locals' hawker centre. Fried hokkien mee, satay, and rojak. Over 150 stalls of excellence.", transit: "🚇 MRT to Dakota Station", emoji: "🍢" },
+            { time: "6:00 PM", period: "evening", place: "Atlas Gin Palace", detail: "Art Deco lobby with the world's tallest gin tower. The gin and tonic flight is a journey through botanicals.", transit: "🚇 MRT to Bugis Station", emoji: "🍸" },
+            { time: "7:30 PM", period: "evening", place: "Night Safari", detail: "The world's first nocturnal zoo. Tram through habitats and walking trails. Creatures come alive after dark.", transit: "🚕 Grab taxi to Mandai, 30 min", emoji: "🦉" },
+            { time: "10:30 PM", period: "evening", place: "Lau Pa Sat Satay Street", detail: "Wind down with smoky satay skewers and cold Tiger beer at the late-night outdoor stalls.", transit: "🚕 Grab back to CBD, 25 min", emoji: "🍢" }
+        ]
+    }
+];
+
+const phrasesData = [
+    { local: "Can or not?", roman: "can or not", english: "Can you do this?" },
+    { local: "Can lah", roman: "can lah", english: "Yes, I can (enthusiastic)" },
+    { local: "Makan", roman: "MAH-kahn", english: "Let's eat (from Malay)" },
+    { local: "Kiasu", roman: "kee-AH-soo", english: "Afraid of losing out" },
+    { local: "Shiok!", roman: "shee-OAK", english: "Delicious / Amazing" },
+    { local: "What is this one ah?", roman: "what is this one ah", english: "What's this?" },
+    { local: "Cannot lah", roman: "cannot lah", english: "No way" },
+    { local: "Jalan jalan", roman: "JAH-lahn JAH-lahn", english: "Let's go / stroll (from Malay)" }
+];
+
+function getCatClass(cat) {
+    const foodCats = ['Hawker','Hawker centre','Seafood','Noodles','Fine dining','Bakery','Indian-Muslim','Bar/restaurant'];
+    const cultureCats = ['Culture','Museum','Architecture','Walk','Scenic','Views','Iconic','Art','Leisure'];
+    const natureCats = ['Nature'];
+    if (foodCats.includes(cat)) return 'food';
+    if (cultureCats.includes(cat)) return 'culture';
+    if (natureCats.includes(cat)) return 'nature';
+    return 'nightlife';
+}
+
+function getBudgetClass(budget) {
+    if (budget === '$' || budget === 'Free') return 'budget-low';
+    if (budget === '$$' || budget === 'Free-$$') return 'budget-mid';
+    return 'budget-high';
+}
+
+function showSection(section) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(section + '-section').classList.add('active');
+    event.target.classList.add('active');
+    if (section === 'map' && window.sgMap) window.sgMap.invalidateSize();
+}
+
+function renderCards(data, containerId, type) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    data.forEach(item => {
+        const catClass = getCatClass(item.cat);
+        const budgetClass = getBudgetClass(item.budget);
+        let html = `<div class="card" data-cat="${item.cat}">
+            <div class="card-emoji">${item.emoji}</div>
+            <div class="card-name">${item.name}</div>
+            <div class="card-meta">
+                <span class="card-tag ${catClass}">${item.cat}</span>
+                <span class="card-tag ${budgetClass}">${item.budget}</span>
+                <span class="card-tag">${item.hood}</span>
+                ${item.time ? `<span class="card-tag">${item.time}</span>` : ''}
+            </div>
+            <div class="card-desc">${item.desc}</div>`;
+        if (item.mustOrder) {
+            html += `<div class="card-must-order">Must order: ${item.mustOrder}</div>`;
+        }
+        html += `</div>`;
+        container.innerHTML += html;
+    });
+}
+
+function renderFilters(data, filterId, cardsId) {
+    const cats = [...new Set(data.map(d => d.cat))];
+    const container = document.getElementById(filterId);
+    container.innerHTML = `<button class="filter-btn active" onclick="filterCards('all', '${cardsId}', '${filterId}', this)">All</button>`;
+    cats.forEach(cat => {
+        container.innerHTML += `<button class="filter-btn" onclick="filterCards('${cat}', '${cardsId}', '${filterId}', this)">${cat}</button>`;
+    });
+}
+
+function filterCards(cat, cardsId, filterId, btn) {
+    document.querySelectorAll(`#${filterId} .filter-btn`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll(`#${cardsId} .card`);
+    cards.forEach(card => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function renderTimeline() {
+    const container = document.getElementById('timeline');
+    container.innerHTML = '';
+    itineraryData.forEach(day => {
+        let html = `<div class="timeline-day">
+            <div class="timeline-day-header">${day.day}</div>`;
+        day.items.forEach(item => {
+            html += `<div class="timeline-item">
+                <div class="timeline-dot ${item.period}"></div>
+                <div class="timeline-content">
+                    <div class="timeline-time">${item.time}</div>
+                    <div class="timeline-place">${item.emoji} ${item.place}</div>
+                    <div class="timeline-detail">${item.detail}</div>
+                    <div class="timeline-transit">${item.transit}</div>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+        container.innerHTML += html;
+    });
+}
+
+function renderPhrases() {
+    const container = document.getElementById('phrases-grid');
+    container.innerHTML = '';
+    phrasesData.forEach(p => {
+        container.innerHTML += `<div class="phrase-card">
+            <div class="phrase-local">${p.local}</div>
+            <div class="phrase-romanized">${p.roman}</div>
+            <div class="phrase-english">${p.english}</div>
+        </div>`;
+    });
+}
+
+function createMarker(lat, lng, color, label) {
+    return L.circleMarker([lat, lng], {
+        radius: 8, fillColor: color, color: '#0f1117', weight: 2, opacity: 1, fillOpacity: 0.9
+    }).bindPopup(`<strong>${label}</strong>`);
+}
+
+function addMarkers(map) {
+    foodData.forEach(d => createMarker(d.lat, d.lng, '#fbbf24', d.emoji + ' ' + d.name).addTo(map));
+    landmarkData.forEach(d => createMarker(d.lat, d.lng, '#60a5fa', d.emoji + ' ' + d.name).addTo(map));
+    nightlifeData.forEach(d => createMarker(d.lat, d.lng, '#f87171', d.emoji + ' ' + d.name).addTo(map));
+}
+
+function initMap() {
+    const map = L.map('map', { scrollWheelZoom: true }).setView([1.3521, 103.8198], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+    addMarkers(map);
+    window.sgMap = map;
+}
+
+renderCards(foodData, 'food-cards', 'food');
+renderCards(landmarkData, 'landmark-cards', 'landmarks');
+renderCards(nightlifeData, 'nightlife-cards', 'nightlife');
+renderFilters(foodData, 'food-filters', 'food-cards');
+renderFilters(landmarkData, 'landmark-filters', 'landmark-cards');
+renderTimeline();
+renderPhrases();
+initMap();
+</script>
+</body>
+</html>

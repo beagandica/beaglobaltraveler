@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ beaglobaltraveler | Paris Travel Guide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1117; color: #e4e4e7; line-height: 1.6; }
+        .hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 60px 40px; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: '✈️'; position: absolute; font-size: 200px; opacity: 0.05; top: -30px; right: -20px; transform: rotate(-15deg); }
+        .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 8px; background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero .subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 24px; }
+        .hero .stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .hero .stat { text-align: center; }
+        .hero .stat-number { font-size: 2rem; font-weight: 700; color: #60a5fa; }
+        .hero .stat-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .nav { display: flex; justify-content: center; gap: 8px; padding: 20px; background: #161822; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #2a2d3a; }
+        .nav button { padding: 10px 24px; border: 1px solid #2a2d3a; border-radius: 24px; background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active { background: #60a5fa; color: #0f1117; border-color: #60a5fa; font-weight: 600; }
+        .section { display: none; padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+        .section.active { display: block; }
+        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 24px; text-align: center; }
+        #map { width: 100%; height: 500px; border-radius: 16px; border: 1px solid #2a2d3a; }
+        .map-legend { display: flex; justify-content: center; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+        .map-legend span { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: #94a3b8; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 20px; border: 1px solid #2a2d3a; border-radius: 20px; background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.85rem; transition: all 0.3s; }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 16px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .card:hover { border-color: #60a5fa; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1); }
+        .card-emoji { font-size: 2rem; margin-bottom: 12px; }
+        .card-name { font-size: 1.15rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+        .card-meta { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .card-tag { font-size: 0.78rem; padding: 3px 10px; border-radius: 12px; background: #2a2d3a; color: #94a3b8; }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e3a5f; color: #60a5fa; }
+        .card-tag.nightlife { background: #4a0e0e; color: #f87171; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; }
+        .card-must-order { font-size: 0.85rem; color: #60a5fa; font-style: italic; }
+        .card-transit { font-size: 0.8rem; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2d3a; }
+        .timeline { max-width: 800px; margin: 0 auto; position: relative; }
+        .timeline::before { content: ''; position: absolute; left: 30px; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa); border-radius: 3px; }
+        .timeline-day { margin-bottom: 40px; }
+        .timeline-day-header { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; padding-left: 60px; color: #60a5fa; }
+        .timeline-item { display: flex; gap: 20px; margin-bottom: 16px; align-items: flex-start; }
+        .timeline-dot { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; margin-top: 4px; margin-left: 21px; z-index: 1; border: 3px solid #0f1117; }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
+        .timeline-content { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; flex: 1; }
+        .timeline-time { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .timeline-place { font-size: 1.05rem; font-weight: 600; color: #f1f5f9; }
+        .timeline-detail { font-size: 0.88rem; color: #94a3b8; margin-top: 4px; }
+        .timeline-transit { font-size: 0.8rem; color: #60a5fa; margin-top: 8px; }
+        .phrases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 900px; margin: 24px auto 0; }
+        .phrase-card { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; text-align: center; }
+        .phrase-local { font-size: 1.8rem; margin-bottom: 4px; }
+        .phrase-romanized { font-size: 0.9rem; color: #38bdf8; font-style: italic; margin-bottom: 8px; }
+        .phrase-english { font-size: 0.85rem; color: #64748b; }
+        .footer { text-align: center; padding: 40px; color: #475569; font-size: 0.9rem; }
+        .footer span { color: #60a5fa; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .stats { gap: 20px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>✈️ beaglobaltraveler | Paris</h1>
+    <p class="subtitle">Your AI travel companion's guide to the City of Light</p>
+    <div class="stats">
+        <div class="stat"><div class="stat-number">8</div><div class="stat-label">Neighborhoods</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Restaurants</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Landmarks</div></div>
+        <div class="stat"><div class="stat-number">5</div><div class="stat-label">Nightlife</div></div>
+    </div>
+</div>
+
+<div class="nav">
+    <button class="active" onclick="showSection('map')">🗺️ Map</button>
+    <button onclick="showSection('food')">🍜 Food</button>
+    <button onclick="showSection('landmarks')">🏛️ Landmarks</button>
+    <button onclick="showSection('nightlife')">🌙 Nightlife</button>
+    <button onclick="showSection('itinerary')">📅 Itinerary</button>
+    <button onclick="showSection('phrases')">💬 Phrases</button>
+</div>
+
+<div id="map-section" class="section active">
+    <h2 class="section-title">🗺️ Paris Map</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#60a5fa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature</span>
+    </div>
+</div>
+
+<div id="food-section" class="section">
+    <h2 class="section-title">🍜 Where to Eat in Paris</h2>
+    <div class="filter-bar" id="food-filters"></div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<div id="landmarks-section" class="section">
+    <h2 class="section-title">🏛️ Must-See Landmarks</h2>
+    <div class="filter-bar" id="landmark-filters"></div>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<div id="nightlife-section" class="section">
+    <h2 class="section-title">🌙 Nightlife & Entertainment</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<div id="itinerary-section" class="section">
+    <h2 class="section-title">📅 2-Day Paris Itinerary</h2>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div id="phrases-section" class="section">
+    <h2 class="section-title">💬 Survival French</h2>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> ·
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> ·
+    <a href="index.html" style="color:#60a5fa">All Cities</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============ DATA ============
+const foodData = [
+    { name: "L'As du Fallafel", cat: "Street food", hood: "Le Marais", budget: "$", desc: "The falafel that even non-falafel people obsess over. The line wraps around the block for a reason.", mustOrder: "Special falafel pita with eggplant", lat: 48.8572, lng: 2.3595, emoji: "🧆" },
+    { name: "Bouillon Chartier", cat: "French bistro", hood: "9th", budget: "$", desc: "A stunning 1896 dining hall serving classic French dishes at unbelievably low prices. Feel fancy without the bill.", mustOrder: "Oeuf mayonnaise, steak frites, profiteroles", lat: 48.8745, lng: 2.3485, emoji: "🍽️" },
+    { name: "Du Pain et des Idees", cat: "Bakery", hood: "Canal Saint-Martin", budget: "$", desc: "Possibly the best bakery in Paris. The pain des amis and escargot pastries are life-changing.", mustOrder: "Escargot pistache-chocolat, pain des amis", lat: 48.8713, lng: 2.3614, emoji: "🥐" },
+    { name: "Le Comptoir du Pantheon", cat: "Cafe", hood: "Latin Quarter", budget: "$$", desc: "Classic Parisian cafe with a view of the Pantheon. Order a croque monsieur and watch the world go by.", mustOrder: "Croque monsieur, cafe creme", lat: 48.8462, lng: 2.3464, emoji: "☕" },
+    { name: "Breizh Cafe", cat: "Creperie", hood: "Le Marais", budget: "$$", desc: "Breton-style crepes with premium ingredients and proper cidre. The galette complete is perfect.", mustOrder: "Galette complete (ham, egg, cheese), cidre", lat: 48.8609, lng: 2.3619, emoji: "🥞" },
+    { name: "Chez Janou", cat: "French", hood: "Le Marais", budget: "$$", desc: "Famous for the best chocolate mousse in Paris, served in a giant bowl you scoop yourself.", mustOrder: "Chocolate mousse (unlimited), duck confit", lat: 48.8553, lng: 2.3654, emoji: "🍫" },
+    { name: "Pink Mamma", cat: "Italian", hood: "11th", budget: "$$", desc: "Four floors of Italian food in a former warehouse. The truffle pizza and tiramisu are outstanding.", mustOrder: "Truffle burrata pizza, tiramisu", lat: 48.8656, lng: 2.3799, emoji: "🍕" },
+    { name: "Le Bouillon Pigalle", cat: "French bistro", hood: "Pigalle", budget: "$", desc: "Modern bouillon with beautiful decor and old-school French dishes. Great value.", mustOrder: "Soupe a l'oignon, blanquette de veau", lat: 48.8823, lng: 2.3377, emoji: "🍲" },
+    { name: "Cafe de Flore", cat: "Cafe", hood: "Saint-Germain", budget: "$$$", desc: "Where Sartre and de Beauvoir held court. Overpriced but iconic. Get a hot chocolate on the terrace.", mustOrder: "Chocolat chaud, croissant", lat: 48.8540, lng: 2.3326, emoji: "☕" },
+    { name: "Septime", cat: "Fine dining", hood: "11th", budget: "$$$", desc: "One of the best modern French tasting menus in Paris. Book weeks in advance. The wine pairings are exceptional.", mustOrder: "Seasonal tasting menu", lat: 48.8553, lng: 2.3789, emoji: "⭐" }
+];
+
+const landmarkData = [
+    { name: "Eiffel Tower", cat: "Iconic", hood: "7th", budget: "$$", time: "2-3 hours", desc: "Skip the summit line by booking online. The second floor has the best photo angles. Sparkles every hour after dark.", lat: 48.8584, lng: 2.2945, emoji: "🗼" },
+    { name: "Louvre Museum", cat: "Museum", hood: "1st", budget: "$$", time: "3-4 hours", desc: "You cannot see it all. Pick a wing, see the Mona Lisa, then get lost. Friday evenings are less crowded.", lat: 48.8606, lng: 2.3376, emoji: "🖼️" },
+    { name: "Sacre-Coeur Basilica", cat: "Culture", hood: "Montmartre", budget: "Free", time: "1-2 hours", desc: "Climb the hill for the best free view in Paris. The basilica is stunning inside. Street performers outside.", lat: 48.8867, lng: 2.3431, emoji: "⛪" },
+    { name: "Musee d'Orsay", cat: "Museum", hood: "7th", budget: "$$", time: "2-3 hours", desc: "Impressionist masterpieces in a converted train station. The clock windows are worth the visit alone.", lat: 48.8600, lng: 2.3266, emoji: "🎨" },
+    { name: "Luxembourg Gardens", cat: "Nature", hood: "6th", budget: "Free", time: "1-2 hours", desc: "Paris's most beautiful park. Bring a book, rent a model sailboat, watch Parisians being Parisian.", lat: 48.8462, lng: 2.3372, emoji: "🌳" },
+    { name: "Sainte-Chapelle", cat: "Culture", hood: "Ile de la Cite", budget: "$$", time: "1 hour", desc: "Gothic chapel with the most spectacular stained glass windows in the world. Go on a sunny day.", lat: 48.8554, lng: 2.3451, emoji: "✨" },
+    { name: "Pere Lachaise Cemetery", cat: "Culture", hood: "20th", budget: "Free", time: "2 hours", desc: "Oscar Wilde, Jim Morrison, Chopin, Edith Piaf. A beautiful, sprawling cemetery that feels like an outdoor museum.", lat: 48.8614, lng: 2.3934, emoji: "🪦" },
+    { name: "Montmartre Village Walk", cat: "Walk", hood: "18th", budget: "Free", time: "2-3 hours", desc: "Wander from Place du Tertre through cobblestone streets past vineyard and windmills. Feels like a village.", lat: 48.8862, lng: 2.3411, emoji: "🚶" },
+    { name: "Centre Pompidou", cat: "Art", hood: "Le Marais", budget: "$$", time: "2-3 hours", desc: "Inside-out architecture housing modern art. The rooftop terrace has panoramic views of Paris.", lat: 48.8607, lng: 2.3525, emoji: "🏛️" },
+    { name: "Seine River Cruise", cat: "Scenic", hood: "Central", budget: "$$", time: "1 hour", desc: "Take a Bateaux Mouches at sunset. Tourist classic but genuinely beautiful when the bridges light up.", lat: 48.8610, lng: 2.3065, emoji: "🚢" }
+];
+
+const nightlifeData = [
+    { name: "Rue de Lappe", cat: "Bars", hood: "Bastille", budget: "$-$$", desc: "A street packed with bars, from salsa clubs to dive bars. Bastille's nightlife hub.", lat: 48.8533, lng: 2.3716, emoji: "🍻" },
+    { name: "Le Perchoir Marais", cat: "Rooftop bar", hood: "Le Marais", budget: "$$", desc: "Rooftop cocktails with views over Parisian rooftops. Arrive early for a good spot.", lat: 48.8653, lng: 2.3656, emoji: "🍸" },
+    { name: "Concrete", cat: "Club", hood: "13th", budget: "$$", desc: "Floating nightclub on a barge by the Seine. Techno, house, open-air terrace.", lat: 48.8373, lng: 2.3804, emoji: "🎧" },
+    { name: "Harry's New York Bar", cat: "Cocktail bar", hood: "2nd", budget: "$$$", desc: "Hemingway drank here. Birthplace of the Bloody Mary. Old-school, wood-paneled, perfect.", lat: 48.8694, lng: 2.3345, emoji: "🍸" },
+    { name: "Le Caveau de la Huchette", cat: "Jazz club", hood: "Latin Quarter", budget: "$$", desc: "Jazz and swing in a medieval cellar since 1946. Dancing every night.", lat: 48.8522, lng: 2.3467, emoji: "🎷" }
+];
+
+const itineraryData = [
+    {
+        day: "Day 1: Classic Paris & Le Marais",
+        items: [
+            { time: "8:30 AM", period: "morning", place: "Du Pain et des Idees", detail: "Start with the best bakery in Paris. The escargot pistache-chocolat pastry is flaky, buttery perfection.", transit: "🚇 Line 5, Jacques Bonsergent Station", emoji: "🥐" },
+            { time: "10:00 AM", period: "morning", place: "Sacre-Coeur & Montmartre", detail: "Climb the hill for panoramic views. Wander through Place du Tertre and the cobblestone artist streets.", transit: "🚇 Line 2, Anvers Station, walk uphill", emoji: "⛪" },
+            { time: "12:30 PM", period: "food-stop", place: "🍜 Lunch: L'As du Fallafel", detail: "Join the line in Le Marais. The special falafel pita with eggplant is worth every minute of waiting.", transit: "🚇 Line 1, Saint-Paul Station", emoji: "🧆" },
+            { time: "2:00 PM", period: "afternoon", place: "Le Marais exploration", detail: "Boutiques, galleries, and hidden courtyards. Stop at Breizh Cafe for a cidre or browse the vintage shops.", transit: "🚶 Walk through Le Marais streets", emoji: "🏘️" },
+            { time: "4:00 PM", period: "afternoon", place: "Centre Pompidou", detail: "Modern art in an inside-out building. The rooftop terrace has free panoramic views of Paris.", transit: "🚶 10 min walk from Le Marais", emoji: "🏛️" },
+            { time: "6:00 PM", period: "evening", place: "Seine River Cruise", detail: "Bateaux Mouches at sunset. Watch the bridges and landmarks light up from the water.", transit: "🚇 Line 9, Alma-Marceau Station", emoji: "🚢" },
+            { time: "8:00 PM", period: "food-stop", place: "🍽️ Dinner: Chez Janou", detail: "Duck confit to start, then the legendary chocolate mousse served in a giant bowl. Scoop until you can't.", transit: "🚇 Line 1, Bastille Station, 5 min walk", emoji: "🍫" },
+            { time: "10:00 PM", period: "evening", place: "Le Caveau de la Huchette", detail: "Swing dancing in a medieval cellar. The live jazz has been playing here since 1946.", transit: "🚇 Line 4, Saint-Michel Station", emoji: "🎷" }
+        ]
+    },
+    {
+        day: "Day 2: Art, Gardens & Left Bank",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "Cafe de Flore", detail: "Overpriced but iconic. Hot chocolate on the terrace where Sartre and de Beauvoir once sat.", transit: "🚇 Line 4, Saint-Germain-des-Pres Station", emoji: "☕" },
+            { time: "10:30 AM", period: "morning", place: "Musee d'Orsay", detail: "Impressionist paradise in a converted train station. The clock windows frame Paris beautifully.", transit: "🚶 10 min walk along the Seine", emoji: "🎨" },
+            { time: "1:00 PM", period: "food-stop", place: "🍜 Lunch: Le Comptoir du Pantheon", detail: "Classic croque monsieur with a view of the Pantheon. Pure Parisian cafe culture.", transit: "🚇 Line 10, Cluny-La Sorbonne Station", emoji: "☕" },
+            { time: "2:30 PM", period: "afternoon", place: "Luxembourg Gardens", detail: "Paris's most beautiful park. Rent a model sailboat, find a green chair, and just be Parisian for an hour.", transit: "🚶 5 min walk south from Pantheon", emoji: "🌳" },
+            { time: "4:00 PM", period: "afternoon", place: "Sainte-Chapelle", detail: "The stained glass windows are unlike anything you've ever seen. Go when the sun is shining.", transit: "🚇 Line 4, Cite Station", emoji: "✨" },
+            { time: "5:30 PM", period: "afternoon", place: "Louvre Museum (evening visit)", detail: "Friday evenings are less crowded. See the Mona Lisa, Winged Victory, then get lost in the Egyptian wing.", transit: "🚶 10 min walk from Ile de la Cite", emoji: "🖼️" },
+            { time: "8:00 PM", period: "food-stop", place: "🍽️ Dinner: Pink Mamma", detail: "Four floors of Italian in a warehouse. The truffle burrata pizza is unreal. No reservations, just queue.", transit: "🚇 Line 3, Rue Saint-Maur Station", emoji: "🍕" },
+            { time: "10:00 PM", period: "evening", place: "Eiffel Tower sparkle show", detail: "Watch the tower sparkle from the Trocadero esplanade. It lights up every hour on the hour after dark.", transit: "🚇 Line 6, Trocadero Station", emoji: "🗼" }
+        ]
+    }
+];
+
+const phrasesData = [
+    { local: "Bonjour", roman: "bohn-ZHOOR", english: "Hello" },
+    { local: "Merci", roman: "mehr-SEE", english: "Thank you" },
+    { local: "S'il vous plait", roman: "seel voo PLEH", english: "Please" },
+    { local: "L'addition, s'il vous plait", roman: "lah-dee-SYOHN seel voo PLEH", english: "The bill please" },
+    { local: "Excusez-moi", roman: "ex-koo-ZAY mwah", english: "Excuse me" },
+    { local: "Parlez-vous anglais?", roman: "par-LAY voo ahn-GLEH", english: "Do you speak English?" },
+    { local: "Delicieux!", roman: "day-lee-SYUH", english: "Delicious!" },
+    { local: "Sante!", roman: "sahn-TAY", english: "Cheers!" }
+];
+
+// ============ HELPERS ============
+function catClass(cat) {
+    const foodCats = ['Street food','French bistro','Bakery','Cafe','Creperie','French','Italian','Fine dining'];
+    const cultureCats = ['Culture','Museum','Architecture','Walk','Scenic','Views','Iconic','Art'];
+    const natureCats = ['Nature'];
+    if (foodCats.includes(cat)) return 'food';
+    if (cultureCats.includes(cat)) return 'culture';
+    if (natureCats.includes(cat)) return 'nature';
+    return 'nightlife';
+}
+
+function budgetClass(b) {
+    if (b === '$' || b === 'Free') return 'budget-low';
+    if (b === '$$' || b === '$-$$') return 'budget-mid';
+    return 'budget-high';
+}
+
+function makeCard(item, type) {
+    let extra = '';
+    if (type === 'food') extra = `<div class="card-must-order">Must order: ${item.mustOrder}</div>`;
+    if (type === 'landmark') extra = `<div class="card-transit">⏱️ ${item.time}</div>`;
+    return `<div class="card" data-cat="${item.cat}">
+        <div class="card-emoji">${item.emoji}</div>
+        <div class="card-name">${item.name}</div>
+        <div class="card-meta">
+            <span class="card-tag ${catClass(item.cat)}">${item.cat}</span>
+            <span class="card-tag">${item.hood}</span>
+            <span class="card-tag ${budgetClass(item.budget)}">${item.budget}</span>
+        </div>
+        <div class="card-desc">${item.desc}</div>
+        ${extra}
+    </div>`;
+}
+
+function buildFilters(data, containerId, cardsId) {
+    const cats = [...new Set(data.map(d => d.cat))];
+    const container = document.getElementById(containerId);
+    container.innerHTML = `<button class="filter-btn active" data-filter="all">All</button>` +
+        cats.map(c => `<button class="filter-btn" data-filter="${c}">${c}</button>`).join('');
+    container.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            document.querySelectorAll(`#${cardsId} .card`).forEach(card => {
+                card.style.display = (filter === 'all' || card.dataset.cat === filter) ? '' : 'none';
+            });
+        });
+    });
+}
+
+// ============ MAP ============
+const map = L.map('map', { scrollWheelZoom: false }).setView([48.8566, 2.3522], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+}).addTo(map);
+
+function addMarkers(data, color) {
+    data.forEach(d => {
+        L.circleMarker([d.lat, d.lng], {
+            radius: 8, fillColor: color, color: '#0f1117', weight: 2, fillOpacity: 0.9
+        }).addTo(map).bindPopup(`<strong>${d.emoji} ${d.name}</strong><br>${d.cat} · ${d.hood}`);
+    });
+}
+addMarkers(foodData, '#fbbf24');
+addMarkers(landmarkData, '#60a5fa');
+addMarkers(nightlifeData, '#f87171');
+
+// ============ RENDER CARDS ============
+document.getElementById('food-cards').innerHTML = foodData.map(d => makeCard(d, 'food')).join('');
+document.getElementById('landmark-cards').innerHTML = landmarkData.map(d => makeCard(d, 'landmark')).join('');
+document.getElementById('nightlife-cards').innerHTML = nightlifeData.map(d => makeCard(d, 'nightlife')).join('');
+
+buildFilters(foodData, 'food-filters', 'food-cards');
+buildFilters(landmarkData, 'landmark-filters', 'landmark-cards');
+
+// ============ TIMELINE ============
+document.getElementById('timeline').innerHTML = itineraryData.map(day => `
+    <div class="timeline-day">
+        <div class="timeline-day-header">${day.day}</div>
+        ${day.items.map(item => `
+            <div class="timeline-item">
+                <div class="timeline-dot ${item.period}"></div>
+                <div class="timeline-content">
+                    <div class="timeline-time">${item.time}</div>
+                    <div class="timeline-place">${item.emoji} ${item.place}</div>
+                    <div class="timeline-detail">${item.detail}</div>
+                    <div class="timeline-transit">${item.transit}</div>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+`).join('');
+
+// ============ PHRASES ============
+document.getElementById('phrases-grid').innerHTML = phrasesData.map(p => `
+    <div class="phrase-card">
+        <div class="phrase-local">${p.local}</div>
+        <div class="phrase-romanized">${p.roman}</div>
+        <div class="phrase-english">${p.english}</div>
+    </div>
+`).join('');
+
+// ============ NAVIGATION ============
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id + '-section').classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if (id === 'map') setTimeout(() => map.invalidateSize(), 100);
+}
+</script>
+
+</body>
+</html>
