@@ -13,7 +13,7 @@
 
         @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
         @keyframes fadeInUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(249,115,22,0.25)}50%{box-shadow:0 0 18px rgba(249,115,22,0.4)}}
+
         .reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
         .reveal.visible{opacity:1;transform:translateY(0)}
 
@@ -27,8 +27,8 @@
         .stat{text-align:center}
         .stat-num{font-size:2.4rem;font-weight:800;color:#f97316}
         .stat-label{font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
-        .cta-btn{display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f97316,#fb923c);color:#fff;border-radius:30px;text-decoration:none;font-weight:700;font-size:1rem;transition:all .3s;box-shadow:0 4px 15px rgba(249,115,22,.25);animation:pulseGlow 3s ease infinite}
-        .cta-btn:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(249,115,22,.4)}
+        .cta-btn{display:inline-block;padding:12px 32px;background:rgba(255,255,255,0.08);color:#f1f5f9;border:1px solid rgba(255,255,255,0.2);border-radius:30px;text-decoration:none;font-weight:600;font-size:.95rem;transition:all .3s;letter-spacing:0.3px}
+        .cta-btn:hover{border-color:#f472b6;color:#f9a8d4;transform:translateY(-2px);box-shadow:0 4px 20px rgba(244,114,182,.15)}
 
         /* Map */
         #map{width:100%;height:480px;background:#0f1117}
@@ -62,20 +62,25 @@
         .city-card:hover{border-color:#f97316;transform:translateY(-4px);box-shadow:0 12px 40px rgba(249,115,22,.12)}
         .city-card.coming-soon{opacity:.5;cursor:default}
         .city-card.coming-soon:hover{border-color:#2a2d3a;transform:none;box-shadow:none}
-        .city-flag{font-size:2.6rem;margin-bottom:10px;line-height:1}
-        .city-flag .fi{font-size:2.6rem;border-radius:4px}
+        .city-flag{font-size:2.4rem;margin-bottom:10px;line-height:1}
+        .city-flag .fi{font-size:2.4rem;border-radius:6px}
         .city-name{font-size:1.15rem;font-weight:600;color:#f1f5f9;margin-bottom:3px}
         .city-country{font-size:.82rem;color:#64748b;margin-bottom:10px}
         .city-tags{display:flex;gap:6px;flex-wrap:wrap}
         .tag{font-size:.7rem;padding:3px 10px;border-radius:10px;font-weight:500}
         .tag-food{background:#422006;color:#fbbf24}
-        .tag-culture{background:#172554;color:#60a5fa}
-        .tag-nightlife{background:#450a0a;color:#f87171}
+        .tag-culture{background:#1e3a5f;color:#60a5fa}
+        .tag-nightlife{background:#4a0e0e;color:#f87171}
         .tag-nature{background:#052e16;color:#4ade80}
         .tag-shopping{background:#431407;color:#fb923c}
+        .tag-beach{background:#164e63;color:#22d3ee}
         .badge{position:absolute;top:12px;right:12px;font-size:.68rem;padding:3px 10px;border-radius:10px;font-weight:600}
         .badge-live{background:#064e3b;color:#6ee7b7}
         .badge-soon{background:#2a2d3a;color:#64748b}
+        .badge-guide{background:#064e3b;color:#6ee7b7}
+        .badge-data{background:#1e3a5f;color:#60a5fa}
+        .city-card.data-ready{cursor:default}
+        .city-card.data-ready:hover{border-color:#3b82f6;transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.1)}
 
         /* Features */
         .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:1000px;margin:0 auto;padding:0 24px 64px}
@@ -112,6 +117,7 @@
 <body>
 
 <section class="hero">
+    <img src="bea-profile.jpg" alt="Bea" style="width:130px;height:130px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.15);margin-bottom:16px;display:block;margin-left:auto;margin-right:auto">
     <h1>beaglobaltraveler</h1>
     <p class="subtitle">Travel the world with Bea</p>
     <p class="tagline">Venezuelan-born, tech-powered, 74 countries and counting. Curated city guides from someone who's actually been there.</p>
@@ -120,6 +126,7 @@
         <div class="stat"><div class="stat-num" data-target="48">0</div><div class="stat-label">of 50 US States</div></div>
         <div class="stat"><div class="stat-num" data-target="7">0</div><div class="stat-label">Continents</div></div>
         <div class="stat"><div class="stat-num" data-target="10">0</div><div class="stat-label">Regions</div></div>
+        <div class="stat"><div class="stat-num" data-target="23">0</div><div class="stat-label">City Guides</div></div>
     </div>
     <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener" class="cta-btn">📸 Follow @beaglobaltraveler</a>
 </section>
@@ -242,28 +249,32 @@ document.getElementById('region-grid').innerHTML=regions.map(function(r){
 
 /* City guide cards */
 var cities=[
-    {n:"Seoul",co:"South Korea",f:"\ud83c\uddf0\ud83c\uddf7",u:"seoul-guide.html",live:1,t:["food","culture","nightlife","shopping"]},
-    {n:"Bucheon",co:"South Korea",f:"\ud83c\uddf0\ud83c\uddf7",u:null,live:0,t:["food","culture","nature"]},
-    {n:"Tokyo",co:"Japan",f:"\ud83c\uddef\ud83c\uddf5",u:null,live:0,t:["food","culture","nightlife","shopping"]},
-    {n:"Paris",co:"France",f:"\ud83c\uddeb\ud83c\uddf7",u:null,live:0,t:["food","culture","shopping"]},
-    {n:"London",co:"United Kingdom",f:"\ud83c\uddec\ud83c\udde7",u:null,live:0,t:["culture","nightlife","shopping"]},
-    {n:"New York",co:"United States",f:"\ud83c\uddfa\ud83c\uddf8",u:null,live:0,t:["food","culture","nightlife","shopping"]},
-    {n:"Bangkok",co:"Thailand",f:"\ud83c\uddf9\ud83c\udded",u:null,live:0,t:["food","culture","nightlife"]},
-    {n:"Dubai",co:"UAE",f:"\ud83c\udde6\ud83c\uddea",u:null,live:0,t:["shopping","culture"]},
-    {n:"Singapore",co:"Singapore",f:"\ud83c\uddf8\ud83c\uddec",u:null,live:0,t:["food","culture","shopping"]},
-    {n:"Istanbul",co:"Turkey",f:"\ud83c\uddf9\ud83c\uddf7",u:null,live:0,t:["food","culture"]},
-    {n:"Barcelona",co:"Spain",f:"\ud83c\uddea\ud83c\uddf8",u:null,live:0,t:["food","culture","nightlife","nature"]},
-    {n:"Rome",co:"Italy",f:"\ud83c\uddee\ud83c\uddf9",u:null,live:0,t:["food","culture"]},
-    {n:"Amsterdam",co:"Netherlands",f:"\ud83c\uddf3\ud83c\uddf1",u:null,live:0,t:["culture","nightlife","nature"]},
-    {n:"Prague",co:"Czech Republic",f:"\ud83c\udde8\ud83c\uddff",u:null,live:0,t:["culture","nightlife"]},
-    {n:"Lisbon",co:"Portugal",f:"\ud83c\uddf5\ud83c\uddf9",u:null,live:0,t:["food","culture","nightlife","nature"]},
-    {n:"Bali",co:"Indonesia",f:"\ud83c\uddee\ud83c\udde9",u:null,live:0,t:["nature","culture","food"]},
-    {n:"Sydney",co:"Australia",f:"\ud83c\udde6\ud83c\uddfa",u:null,live:0,t:["nature","food","culture"]},
-    {n:"Mexico City",co:"Mexico",f:"\ud83c\uddf2\ud83c\uddfd",u:null,live:0,t:["food","culture","nightlife"]},
-    {n:"Marrakech",co:"Morocco",f:"\ud83c\uddf2\ud83c\udde6",u:null,live:0,t:["food","culture","shopping"]},
-    {n:"Kyoto",co:"Japan",f:"\ud83c\uddef\ud83c\uddf5",u:null,live:0,t:["culture","nature","food"]},
-    {n:"Reykjavik",co:"Iceland",f:"\ud83c\uddee\ud83c\uddf8",u:null,live:0,t:["nature","culture"]},
-    {n:"Cape Town",co:"South Africa",f:"\ud83c\uddff\ud83c\udde6",u:null,live:0,t:["nature","food","culture"]}
+    {n:"Seoul",co:"South Korea",f:"kr",u:"seoul-guide.html",live:2,t:["food","culture","nightlife","shopping"]},
+    {n:"Bucheon",co:"South Korea",f:"kr",u:null,live:1,t:["food","culture","nature"]},
+    {n:"Tokyo",co:"Japan",f:"jp",u:null,live:1,t:["food","culture","nightlife","shopping"]},
+    {n:"Paris",co:"France",f:"fr",u:null,live:1,t:["food","culture","shopping"]},
+    {n:"London",co:"United Kingdom",f:"gb",u:null,live:1,t:["culture","nightlife","shopping"]},
+    {n:"New York",co:"United States",f:"us",u:null,live:1,t:["food","culture","nightlife","shopping"]},
+    {n:"Bangkok",co:"Thailand",f:"th",u:null,live:1,t:["food","culture","nightlife"]},
+    {n:"Dubai",co:"UAE",f:"ae",u:null,live:1,t:["shopping","culture"]},
+    {n:"Singapore",co:"Singapore",f:"sg",u:null,live:1,t:["food","culture","shopping"]},
+    {n:"Istanbul",co:"Turkey",f:"tr",u:null,live:1,t:["food","culture"]},
+    {n:"Barcelona",co:"Spain",f:"es",u:null,live:1,t:["food","culture","nightlife","nature"]},
+    {n:"Rome",co:"Italy",f:"it",u:null,live:1,t:["food","culture"]},
+    {n:"Amsterdam",co:"Netherlands",f:"nl",u:null,live:1,t:["culture","nightlife","nature"]},
+    {n:"Prague",co:"Czech Republic",f:"cz",u:null,live:1,t:["culture","nightlife"]},
+    {n:"Lisbon",co:"Portugal",f:"pt",u:null,live:1,t:["food","culture","nightlife","nature"]},
+    {n:"Bali",co:"Indonesia",f:"id",u:null,live:1,t:["nature","culture","food","beach"]},
+    {n:"Sydney",co:"Australia",f:"au",u:null,live:1,t:["nature","food","culture"]},
+    {n:"Mexico City",co:"Mexico",f:"mx",u:null,live:1,t:["food","culture","nightlife"]},
+    {n:"Reykjavik",co:"Iceland",f:"is",u:null,live:1,t:["nature","culture"]},
+    {n:"Bora Bora",co:"French Polynesia",f:"pf",u:null,live:1,t:["nature","beach"]},
+    {n:"Fiji",co:"Fiji",f:"fj",u:null,live:1,t:["nature","beach"]},
+    {n:"Seychelles",co:"Seychelles",f:"sc",u:null,live:1,t:["nature","beach"]},
+    {n:"Mauritius",co:"Mauritius",f:"mu",u:null,live:1,t:["nature","beach"]},
+    {n:"Marrakech",co:"Morocco",f:"ma",u:null,live:0,t:["food","culture","shopping"]},
+    {n:"Kyoto",co:"Japan",f:"jp",u:null,live:0,t:["culture","nature","food"]},
+    {n:"Cape Town",co:"South Africa",f:"za",u:null,live:0,t:["nature","food","culture"]}
 ];
 
 function renderCities(filter){
@@ -274,11 +285,20 @@ function renderCities(filter){
     }):cities;
     grid.innerHTML=list.map(function(c){
         var tags=c.t.map(function(t){return'<span class="tag tag-'+t+'">'+t+'</span>'}).join('');
-        var badge=c.live?'<span class="badge badge-live">LIVE</span>':'<span class="badge badge-soon">COMING SOON</span>';
-        if(c.live&&c.u){
-            return'<a href="'+c.u+'" class="city-card">'+badge+'<div class="city-flag">'+c.f+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></a>';
+        var flag='<span class="fi fi-'+c.f+' fis"></span>';
+        if(c.live===2){
+            return'<a href="'+c.u+'" class="city-card">'+
+                '<span class="badge badge-guide">GUIDE</span>'+
+                '<div class="city-flag">'+flag+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></a>';
         }
-        return'<div class="city-card coming-soon">'+badge+'<div class="city-flag">'+c.f+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></div>';
+        if(c.live===1){
+            return'<div class="city-card data-ready">'+
+                '<span class="badge badge-data">DATA READY</span>'+
+                '<div class="city-flag">'+flag+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></div>';
+        }
+        return'<div class="city-card coming-soon">'+
+            '<span class="badge badge-soon">COMING SOON</span>'+
+            '<div class="city-flag">'+flag+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></div>';
     }).join('');
 }
 function filterCities(){renderCities(document.getElementById('search').value)}
