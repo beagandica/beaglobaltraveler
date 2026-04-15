@@ -17,7 +17,7 @@ Discover ${input:city:City name, e.g., Tokyo} in ${input:country:Country, e.g., 
 1. Check if `.github/skills/city-explorer/references/` already has a guide for this city
 2. If it exists, say so and offer to update it instead
 3. Run `python .github/skills/city-explorer/scripts/discover_city.py --city "${input:city}" --country "${input:country}" --dry-run` to generate a starter guide
-4. Review the output — if it's just a template (no API key), enrich it with your knowledge:
+4. Review the output, if it's just a template (no API key), enrich it with your knowledge:
    - Add 6-8 real neighborhoods with vibes and transit
    - Add 8-10 real restaurants with budget levels and must-order items
    - Add 8-10 real landmarks with time needed and descriptions

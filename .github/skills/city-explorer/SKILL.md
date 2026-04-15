@@ -64,9 +64,9 @@ Use this workflow when the traveler asks about a city that has no reference file
    - Fill in real neighborhoods, restaurants, landmarks, nightlife, transit tips, and local phrases
    - Add budget levels, descriptions, and must-order items
 4. **Automatically save** the completed guide as `references/[city-slug].md` (lowercase, kebab-case)
-5. Add `> ⚠️ Auto-generated guide (YYYY-MM-DD) — verify recommendations before relying on them.` at the top
+5. Add `> ⚠️ Auto-generated guide (YYYY-MM-DD), verify recommendations before relying on them.` at the top
 6. Proceed with the original request (recommend, itinerary, or surprise me) using the freshly saved guide
-7. The next time anyone asks about this city, the reference file is already there — no regeneration needed
+7. The next time anyone asks about this city, the reference file is already there, no regeneration needed
 
 **Important**: Always use lowercase kebab-case for filenames (e.g., `new-york.md`, `sao-paulo.md`). The filename must match what `recommend.py` expects.
 
@@ -83,18 +83,18 @@ Use this workflow when the traveler asks about a city that has no reference file
 
 ## References
 
-- `references/seoul.md` — Seoul guide (curated): neighborhoods, food, landmarks, activities, transit
-- `references/bucheon.md` — Bucheon guide (curated): neighborhoods, food, landmarks, activities, transit
+- `references/seoul.md`: Seoul guide (curated): neighborhoods, food, landmarks, activities, transit
+- `references/bucheon.md`: Bucheon guide (curated): neighborhoods, food, landmarks, activities, transit
 - Additional city files follow the same format (one file per city, auto-generated files marked with ⚠️)
 
 ## Scripts
 
-- `scripts/recommend.py --city <city> --vibe <vibe>` — picks a random recommendation filtered by city and vibe category
-- `scripts/discover_city.py --city <city> --country <country>` — generates a new city guide from OpenTripMap API (if `OTM_API_KEY` is set) or a structured template. Use `--dry-run` to preview without saving.
+- `scripts/recommend.py --city <city> --vibe <vibe>`: picks a random recommendation filtered by city and vibe category
+- `scripts/discover_city.py --city <city> --country <country>`: generates a new city guide from OpenTripMap API (if `OTM_API_KEY` is set) or a structured template. Use `--dry-run` to preview without saving.
 
 ## Assets
 
-- `assets/itinerary-template.md` — template for day-by-day itinerary output
+- `assets/itinerary-template.md`: template for day-by-day itinerary output
 
 ## Output contract
 

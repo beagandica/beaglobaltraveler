@@ -1,6 +1,6 @@
 # ✈️ Wanderly Travel Planner
 
-An AI-powered travel planner built with GitHub Copilot customization — custom agents, skills, and prompt files working together.
+An AI-powered travel planner built with GitHub Copilot customization: custom agents, skills, and prompt files working together.
 
 **Ask about any city.** If Wanderly knows it, you get instant curated recommendations. If not, it auto-generates a guide and caches it for next time.
 
@@ -9,7 +9,7 @@ An AI-powered travel planner built with GitHub Copilot customization — custom 
 | Layer | File | What it does |
 |---|---|---|
 | Project context | `.github/copilot-instructions.md` | Tells Copilot about the project |
-| Agent | `.github/agents/wanderly.agent.md` | ✈️ Wanderly — enthusiastic travel planner with personality |
+| Agent | `.github/agents/wanderly.agent.md` | ✈️ Wanderly, enthusiastic travel planner with personality |
 | Skill | `.github/skills/city-explorer/` | City data, recommendation scripts, itinerary templates |
 | Instructions | `.github/instructions/` | Path-specific rules for markdown and Python files |
 | Prompts | `.github/prompts/` | `/plan-my-day` and `/discover-city` reusable commands |
@@ -31,8 +31,8 @@ Open Copilot Chat, select **Wanderly** from the `@` picker, and ask:
 - *"Discover Tokyo for me"*
 
 Or use the commands:
-- `/plan-my-day` — generate a day itinerary
-- `/discover-city` — build a guide for a new city
+- `/plan-my-day`: generate a day itinerary
+- `/discover-city`: build a guide for a new city
 
 ## CLI
 
@@ -46,7 +46,7 @@ python -m src.main cities
 
 Just create one markdown file at `.github/skills/city-explorer/references/[city].md` following the same format as `seoul.md`. No code changes needed.
 
-Or ask Wanderly: *"Tell me about Lisbon"* — it will auto-generate and cache the guide.
+Or ask Wanderly: *"Tell me about Lisbon"*, it will auto-generate and cache the guide.
 
 ## Visualization
 

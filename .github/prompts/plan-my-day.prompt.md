@@ -9,7 +9,7 @@ tools:
   - execute
 ---
 
-Plan a day in ${input:city:City name, e.g., Seoul} for a traveler who wants a ${input:vibe:Vibe — foodie, culture, nightlife, or chill} experience.
+Plan a day in ${input:city:City name, e.g., Seoul} for a traveler who wants a ${input:vibe:Vibe, foodie, culture, nightlife, or chill} experience.
 
 ## Steps
 

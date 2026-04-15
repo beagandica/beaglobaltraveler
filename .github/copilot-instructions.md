@@ -1,4 +1,4 @@
-# Travel Planner — Copilot instructions
+# Travel Planner: Copilot instructions
 
 ## Project overview
 
@@ -25,10 +25,10 @@ ruff check src/ tests/             # Run linter
 
 ## Project structure
 
-- `src/` — application source code (planner logic, CLI entry point)
-- `docs/` — travel guides and contributor docs
-- `tests/` — pytest test suite
-- `.github/` — Copilot customization (agents, skills, instructions, prompts)
+- `src/`: application source code (planner logic, CLI entry point)
+- `docs/`: travel guides and contributor docs
+- `tests/`: pytest test suite
+- `.github/`: Copilot customization (agents, skills, instructions, prompts)
 
 ## Coding standards
 

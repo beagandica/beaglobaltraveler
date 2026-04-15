@@ -78,7 +78,7 @@ def cmd_cities(args: argparse.Namespace) -> None:
 def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="✈️ Travel Planner — explore cities with curated recommendations"
+        description="✈️ Travel Planner: explore cities with curated recommendations"
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 

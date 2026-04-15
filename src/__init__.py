@@ -1,1 +1,1 @@
-"""Travel Planner — explore cities with curated recommendations."""
+"""Travel Planner: explore cities with curated recommendations."""

@@ -11,7 +11,7 @@ def load_recommendations(city_file: Path, vibe: str | None = None) -> list[dict]
 
     Args:
         city_file: Path to the city reference markdown file.
-        vibe: Optional filter — food, culture, nightlife, or chill.
+        vibe: Optional filter: food, culture, nightlife, or chill.
 
     Returns:
         List of recommendation dicts with name, category, neighborhood,

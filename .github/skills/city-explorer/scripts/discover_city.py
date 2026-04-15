@@ -129,13 +129,13 @@ def generate_from_api(city: str, country: str, api_key: str) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     lines = [
-        f"> ⚠️ Auto-generated guide ({now}) — not yet curated by a human. Verify recommendations before relying on them.",
+        f"> ⚠️ Auto-generated guide ({now}). Not yet curated by a human. Verify recommendations before relying on them.",
         "",
         f"# {city.title()} city guide",
         "",
         "## Overview",
         "",
-        f"{city.title()} ({country.title()}) — a city waiting to be explored.",
+        f"{city.title()} ({country.title()}), a city waiting to be explored.",
         f"This guide was auto-generated from OpenTripMap data and should be reviewed and enriched with local knowledge.",
         "",
         "**Currency**: [Add local currency]",
@@ -229,13 +229,13 @@ def generate_template(city: str, country: str) -> str:
     """
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    return f"""> ⚠️ Auto-generated guide ({now}) — not yet curated by a human. Verify recommendations before relying on them.
+    return f"""> ⚠️ Auto-generated guide ({now}). Not yet curated by a human. Verify recommendations before relying on them.
 
 # {city.title()} city guide
 
 ## Overview
 
-{city.title()} ({country.title()}) — a city waiting to be explored.
+{city.title()} ({country.title()}), a city waiting to be explored.
 Fill in this template with real recommendations from local knowledge or travel research.
 
 **Best time to visit**: [Add]

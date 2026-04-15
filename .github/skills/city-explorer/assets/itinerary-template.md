@@ -1,4 +1,4 @@
-# [City] itinerary — [Number] days
+# [City] itinerary: [Number] days
 
 ## Traveler profile
 
@@ -12,30 +12,30 @@
 
 ### 🌅 Morning
 
-**[Activity/Place name]** — [neighborhood]
+**[Activity/Place name]**, [neighborhood]
 - [Description and why it's worth visiting]
 - 💰 Budget: [$ level]
 - 🚇 How to get there: [transit directions]
 
 ### ☀️ Afternoon
 
-**[Activity/Place name]** — [neighborhood]
+**[Activity/Place name]**, [neighborhood]
 - [Description]
 - 💰 Budget: [$ level]
 - 🚇 How to get there: [transit from morning spot]
 
-**🍜 Lunch: [Restaurant name]** — [neighborhood]
+**🍜 Lunch: [Restaurant name]**, [neighborhood]
 - [What to order]
 - 💰 Budget: [$ level]
 
 ### 🌙 Evening
 
-**[Activity/Place name]** — [neighborhood]
+**[Activity/Place name]**, [neighborhood]
 - [Description]
 - 💰 Budget: [$ level]
 - 🚇 How to get there: [transit from afternoon spot]
 
-**🍽️ Dinner: [Restaurant name]** — [neighborhood]
+**🍽️ Dinner: [Restaurant name]**, [neighborhood]
 - [What to order]
 - 💰 Budget: [$ level]
 
@@ -55,4 +55,4 @@
 
 ---
 
-*Planned with ✈️ by Wanderly — Happy wandering!*
+*Planned with ✈️ by Wanderly. Happy wandering!*

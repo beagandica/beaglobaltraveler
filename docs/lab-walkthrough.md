@@ -29,12 +29,12 @@
 - Created `.github/agents/wanderly.agent.md` with:
   - **Name**: Wanderly ✈️
   - **Personality**: Enthusiastic travel planner, calls user "traveler", poetic about food, storyteller for landmarks, Korean phrases sprinkled in, travel sign-offs
-  - **Tools**: read, edit, search, execute (no fetch — stays grounded in reference data)
+  - **Tools**: read, edit, search, execute (no fetch: stays grounded in reference data)
   - **Priorities**: Authentic experiences > practical details > personalization > safety
   - **Boundaries**: No booking, no made-up places, always include budget, note dietary needs
 
 ### What we tested
-- ✅ Selected Wanderly from `@` picker, asked *"Introduce yourself"* — responded in character
+- ✅ Selected Wanderly from `@` picker, asked *"Introduce yourself"*: responded in character
 - ✅ Agent maintained personality across interactions
 - ✅ Agent refused to make up places when no reference data existed (Bucheon test before adding data)
 
@@ -49,8 +49,8 @@
   - **assets/itinerary-template.md**: Day-by-day template with morning/afternoon/evening blocks
 
 ### What we tested
-- ✅ Asked Wanderly *"What should I eat in Seoul?"* — pulled from reference data with budget and transit
-- ✅ Used `/plan-my-day` prompt with "seoul" and "foodie" — generated full itinerary saved to `docs/`
+- ✅ Asked Wanderly *"What should I eat in Seoul?"*, pulled from reference data with budget and transit
+- ✅ Used `/plan-my-day` prompt with "seoul" and "foodie": generated full itinerary saved to `docs/`
 - ✅ Script ran successfully: `python recommend.py --city seoul --vibe food --count 3`
 - ✅ Wanderly correctly refused Bucheon before reference data existed (boundaries held)
 - ✅ After adding `bucheon.md`, Wanderly could plan Bucheon trips (extensibility confirmed)
@@ -59,10 +59,10 @@
 
 ### What we built
 - **Path-specific instructions**:
-  - `.github/instructions/markdown.instructions.md` (applyTo: `**/*.md`) — ATX headings, emoji conventions, travel-specific rules
-  - `.github/instructions/python.instructions.md` (applyTo: `**/*.py`) — type hints, pathlib, UTF-8 encoding
+  - `.github/instructions/markdown.instructions.md` (applyTo: `**/*.md`): ATX headings, emoji conventions, travel-specific rules
+  - `.github/instructions/python.instructions.md` (applyTo: `**/*.py`): type hints, pathlib, UTF-8 encoding
 - **Prompt file**:
-  - `.github/prompts/plan-my-day.prompt.md` — reusable `/plan-my-day` command with city and vibe parameters, 10-step workflow, saves output to `docs/`
+  - `.github/prompts/plan-my-day.prompt.md`: reusable `/plan-my-day` command with city and vibe parameters, 10-step workflow, saves output to `docs/`
 
 ### What we tested
 - ✅ `/plan-my-day` appeared in the `/` picker and accepted parameters
@@ -72,12 +72,12 @@
 ## Bonus: Python application code
 
 ### What we built
-- `src/models.py` — Pydantic models: Recommendation, DayBlock, DayPlan, Itinerary, City
-- `src/parser.py` — Markdown table parser that reads city reference files into structured data
-- `src/main.py` — CLI with two commands:
-  - `python -m src.main explore seoul --vibe food` — random recommendations
-  - `python -m src.main cities` — list available city guides
-- `requirements.txt` — pydantic dependency
+- `src/models.py`: Pydantic models: Recommendation, DayBlock, DayPlan, Itinerary, City
+- `src/parser.py`: Markdown table parser that reads city reference files into structured data
+- `src/main.py`: CLI with two commands:
+  - `python -m src.main explore seoul --vibe food`: random recommendations
+  - `python -m src.main cities`: list available city guides
+- `requirements.txt`: pydantic dependency
 
 ### What we tested
 - ✅ CLI ran successfully for Seoul and Bucheon
@@ -87,8 +87,8 @@
 ## Generated artifacts
 
 Wanderly created these docs during testing (saved to `docs/`):
-- `docs/seoul-2day-foodie-culture.md` — 2-day Seoul food and culture itinerary
-- `docs/seoul-neighborhood-day-trips.md` — Seoul day trip alternatives guide
+- `docs/seoul-2day-foodie-culture.md`: 2-day Seoul food and culture itinerary
+- `docs/seoul-neighborhood-day-trips.md`: Seoul day trip alternatives guide
 
 ## Key takeaways
 
