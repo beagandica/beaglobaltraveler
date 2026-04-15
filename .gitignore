@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .env
+
+# Internal backlog (not for public repo)
+BACKLOG-INTERNAL.md

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mexico City Travel Guide | beaglobaltraveler</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🌍</text></svg>">
+    <meta property="og:title" content="Mexico City Travel Guide | beaglobaltraveler">
+    <meta property="og:description" content="Interactive Mexico City guide with map, local food picks, landmarks, nightlife, and a 2-day itinerary. By @beaglobaltraveler.">
+    <meta property="og:image" content="https://beagandica.github.io/beaglobaltraveler/bea-profile.jpg">
+    <meta property="og:url" content="https://beagandica.github.io/beaglobaltraveler/mexico-city-guide.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '✈️';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -30px;
+            right: -20px;
+            transform: rotate(-15deg);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+        .hero .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero .stat {
+            text-align: center;
+        }
+        .hero .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .hero .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Nav tabs */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            background: #161822;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #2a2d3a;
+        }
+        .nav button {
+            padding: 10px 24px;
+            border: 1px solid #2a2d3a;
+            border-radius: 24px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active {
+            background: #60a5fa;
+            color: #0f1117;
+            border-color: #60a5fa;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section.active { display: block; }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Map */
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            border: 1px solid #2a2d3a;
+        }
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .map-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid #2a2d3a;
+            border-radius: 20px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
+
+        /* Cards grid */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1);
+        }
+        .card-emoji {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        .card-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .card-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .card-tag {
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #2a2d3a;
+            color: #94a3b8;
+        }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e3a5f; color: #60a5fa; }
+        .card-tag.nightlife { background: #4a0e0e; color: #f87171; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .card-must-order {
+            font-size: 0.85rem;
+            color: #60a5fa;
+            font-style: italic;
+        }
+        .card-transit {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #2a2d3a;
+        }
+
+        /* Timeline */
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa);
+            border-radius: 3px;
+        }
+        .timeline-day {
+            margin-bottom: 40px;
+        }
+        .timeline-day-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 60px;
+            color: #60a5fa;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-left: 21px;
+            z-index: 1;
+            border: 3px solid #0f1117;
+        }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
+        .timeline-content {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .timeline-place {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .timeline-detail {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .timeline-transit {
+            font-size: 0.8rem;
+            color: #60a5fa;
+            margin-top: 8px;
+        }
+
+        /* Phrases */
+        .phrases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+            margin: 24px auto 0;
+        }
+        .phrase-card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .phrase-native {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+        .phrase-romanized {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .phrase-english {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        .footer span { color: #60a5fa; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .stats { gap: 20px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>✈️ beaglobaltraveler | Mexico City</h1>
+    <p class="subtitle">Your AI travel companion's guide to one of the world's great megacities</p>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Neighborhoods</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Restaurants</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Landmarks</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Nightlife</div>
+        </div>
+    </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+    <button class="active" onclick="showSection('map')">🗺️ Map</button>
+    <button onclick="showSection('food')">🍜 Food</button>
+    <button onclick="showSection('landmarks')">🏛️ Landmarks</button>
+    <button onclick="showSection('nightlife')">🌙 Nightlife</button>
+    <button onclick="showSection('itinerary')">📅 Itinerary</button>
+    <button onclick="showSection('phrases')">💬 Phrases</button>
+</div>
+
+<!-- Map Section -->
+<div id="sec-map" class="section active">
+    <h2 class="section-title">🗺️ Explore Mexico City</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#60a5fa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature / Views</span>
+    </div>
+</div>
+
+<!-- Food Section -->
+<div id="sec-food" class="section">
+    <h2 class="section-title">🍜 Where to Eat</h2>
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterCards('food', 'all', this)">All</button>
+        <button class="filter-btn" onclick="filterCards('food', '$', this)">$ Budget</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$', this)">$$ Mid</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$$', this)">$$$ Splurge</button>
+    </div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<!-- Landmarks Section -->
+<div id="sec-landmarks" class="section">
+    <h2 class="section-title">🏛️ Things to Do</h2>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<!-- Nightlife Section -->
+<div id="sec-nightlife" class="section">
+    <h2 class="section-title">🌙 After Dark</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<!-- Itinerary Section -->
+<div id="sec-itinerary" class="section">
+    <h2 class="section-title">📅 2-Day Mexico City Itinerary</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by beaglobaltraveler ✈️ , tacos + culture vibes</p>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<!-- Phrases Section -->
+<div id="sec-phrases" class="section">
+    <h2 class="section-title">💬 Survival Spanish</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:8px;">The phrases that'll make locals smile</p>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> ·
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> ·
+    <a href="index.html" style="color:#60a5fa">All Cities</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const foodData = [
+    { name: "Tacos El Califa de Leon", cat: "Tacos", hood: "Centro", budget: "$", desc: "Michelin-starred street tacos. Bistec and costilla on a hot griddle, served on fresh tortillas. Simple perfection.", mustOrder: "Taco de bistec, taco de costilla", lat: 19.4326, lng: -99.1332, emoji: "🌮" },
+    { name: "Pujol", cat: "Fine dining", hood: "Polanco", budget: "$$$", desc: "Enrique Olvera's legendary restaurant. The mole madre (two moles, 1500+ days aging) is iconic. Book months ahead.", mustOrder: "Mole madre, taco omakase", lat: 19.4335, lng: -99.1956, emoji: "⭐" },
+    { name: "El Moro Churreria", cat: "Churros", hood: "Centro Historico", budget: "$", desc: "Churros and hot chocolate since 1935. Open 24 hours, neon-lit, and absolutely perfect at 2 AM.", mustOrder: "Churros with chocolate espeso", lat: 19.4335, lng: -99.1380, emoji: "🍩" },
+    { name: "Mercado Roma", cat: "Food hall", hood: "Roma Norte", budget: "$-$$", desc: "A curated food market with tacos, ramen, craft beer, and mezcal. Rooftop bar with city views.", mustOrder: "Tacos, craft mezcal, seasonal specials", lat: 19.4170, lng: -99.1620, emoji: "🏪" },
+    { name: "Contramar", cat: "Seafood", hood: "Roma Norte", budget: "$$-$$$", desc: "The tuna tostadas and red-and-green grilled fish are the most Instagrammed dishes in CDMX. Book ahead.", mustOrder: "Tostadas de atun, pescado a la talla", lat: 19.4185, lng: -99.1645, emoji: "🐟" },
+    { name: "Los Cocuyos", cat: "Tacos", hood: "Centro Historico", budget: "$", desc: "Late-night taco stand with suadero (brisket) and longaniza tacos by the glow of a bare light bulb.", mustOrder: "Suadero tacos, longaniza", lat: 19.4340, lng: -99.1340, emoji: "🌮" },
+    { name: "Rosetta", cat: "Italian-Mexican", hood: "Roma Norte", budget: "$$$", desc: "Elena Reygadas' beautiful restaurant in a Roma mansion. Italian techniques with Mexican ingredients.", mustOrder: "Ricotta stuffed squash blossoms, pasta", lat: 19.4195, lng: -99.1626, emoji: "🌸" },
+    { name: "El Hidalguense", cat: "Barbacoa", hood: "Multiple", budget: "$", desc: "Weekend barbacoa (slow-cooked lamb) wrapped in maguey leaves. The consomme is liquid gold.", mustOrder: "Barbacoa with consomme, salsa verde", lat: 19.4200, lng: -99.1560, emoji: "🐑" },
+    { name: "Cafe de Tacuba", cat: "Traditional Mexican", hood: "Centro Historico", budget: "$$", desc: "Gorgeous tiled restaurant serving classic Mexican dishes since 1912. Enchiladas and mole are benchmark.", mustOrder: "Enchiladas suizas, mole poblano", lat: 19.4360, lng: -99.1370, emoji: "🍽️" },
+    { name: "Expendio de Maiz", cat: "Traditional", hood: "Centro", budget: "$$", desc: "Corn-focused restaurant celebrating indigenous Mexican cuisine. Every tortilla is nixtamalized in-house.", mustOrder: "Blue corn quesadillas, seasonal specials", lat: 19.4310, lng: -99.1310, emoji: "🌽" }
+];
+
+const landmarkData = [
+    { name: "Museo Frida Kahlo (Casa Azul)", cat: "Museum", hood: "Coyoacan", budget: "$$", time: "2-3 hours", desc: "The Blue House where Frida lived and worked. Her art, personal belongings, and gardens. Book timed tickets online.", lat: 19.3555, lng: -99.1626, emoji: "🎨" },
+    { name: "Palacio de Bellas Artes", cat: "Art/Architecture", hood: "Centro Historico", budget: "$", time: "1-2 hours", desc: "Art Deco and Art Nouveau masterpiece. Diego Rivera and Siqueiros murals inside. Check for ballet or concert schedules.", lat: 19.4352, lng: -99.1413, emoji: "🏛️" },
+    { name: "Templo Mayor", cat: "History", hood: "Centro Historico", budget: "$$", time: "2 hours", desc: "Aztec temple ruins in the heart of the city, right next to the cathedral. The museum has incredible artifacts.", lat: 19.4348, lng: -99.1319, emoji: "🏛️" },
+    { name: "Chapultepec Castle", cat: "History/Views", hood: "Chapultepec", budget: "$", time: "2-3 hours", desc: "The only royal castle in the Americas. Panoramic city views from the terrace. Walk through Chapultepec Park to reach it.", lat: 19.4205, lng: -99.1819, emoji: "🏰" },
+    { name: "Xochimilco Floating Gardens", cat: "Culture", hood: "Xochimilco", budget: "$$", time: "3-4 hours", desc: "Colorful trajinera boats through ancient Aztec canals. Mariachis and food vendors float alongside. Go on weekends.", lat: 19.2575, lng: -99.1000, emoji: "🛶" },
+    { name: "Museo Nacional de Antropologia", cat: "Museum", hood: "Chapultepec", budget: "$$", time: "3-4 hours", desc: "One of the world's great museums. The Aztec Sun Stone, Maya artifacts, and indigenous cultures of Mexico.", lat: 19.4260, lng: -99.1862, emoji: "🗿" },
+    { name: "Coyoacan Market and Square", cat: "Culture", hood: "Coyoacan", budget: "Free", time: "2-3 hours", desc: "Wander the colorful colonial neighbourhood. Market stalls with tostadas, artisans, and the Coyoacan church.", lat: 19.3500, lng: -99.1620, emoji: "🎪" },
+    { name: "Teotihuacan Pyramids", cat: "Day trip", hood: "Outside CDMX", budget: "$$", time: "Full day", desc: "Pyramid of the Sun, Pyramid of the Moon, Avenue of the Dead. An hour from the city. Go early, bring sun protection.", lat: 19.6925, lng: -98.8438, emoji: "🏔️" },
+    { name: "Zocalo (Plaza de la Constitucion)", cat: "Culture", hood: "Centro Historico", budget: "Free", time: "1 hour", desc: "One of the largest public squares in the world. Metropolitan Cathedral, National Palace, ancient Aztec ruins.", lat: 19.4326, lng: -99.1332, emoji: "⛪" },
+    { name: "Lucha Libre at Arena Mexico", cat: "Entertainment", hood: "Centro", budget: "$-$$", time: "3 hours", desc: "Friday night wrestling with masks, capes, and crowd energy you won't believe. Get floor seats for the full experience.", lat: 19.4268, lng: -99.1443, emoji: "🤼" }
+];
+
+const nightlifeData = [
+    { name: "Alvaro Obregon Bar Strip", cat: "Bars", hood: "Roma Norte", budget: "$-$$", desc: "The main avenue in Roma Norte lined with bars, from mezcalerias to craft cocktail spots.", lat: 19.4180, lng: -99.1630, emoji: "🍻" },
+    { name: "Salon Tenampa", cat: "Cantina", hood: "Centro", budget: "$$", desc: "Legendary mariachi cantina in Plaza Garibaldi since 1925. Hire a mariachi table-side with tequila.", lat: 19.4395, lng: -99.1415, emoji: "🎺" },
+    { name: "Departamento", cat: "Speakeasy", hood: "Condesa", budget: "$$", desc: "Hidden cocktail bar behind an unmarked door. Mezcal cocktails, intimate space, excellent bartenders.", lat: 19.4125, lng: -99.1708, emoji: "🥃" },
+    { name: "Patrick Miller", cat: "Dance club", hood: "San Rafael", budget: "$", desc: "Saturday night dance-off parties. Locals dance in circles, the energy is insane. Pure CDMX.", lat: 19.4335, lng: -99.1540, emoji: "💃" },
+    { name: "Limantour", cat: "Cocktail bar", hood: "Roma Norte", budget: "$$", desc: "Ranked among the world's best bars. Mexican-inspired cocktails that are innovative and beautifully crafted.", lat: 19.4190, lng: -99.1635, emoji: "🍸" }
+];
+
+const phrasesData = [
+    { native: "Hola", roman: "OH-lah", english: "Hello" },
+    { native: "Gracias", roman: "GRAH-see-as", english: "Thank you" },
+    { native: "Por favor", roman: "por fa-VOR", english: "Please" },
+    { native: "La cuenta, por favor", roman: "lah KWEN-tah por fa-VOR", english: "The bill please" },
+    { native: "Que rico!", roman: "keh REE-ko", english: "Delicious!" },
+    { native: "Cuanto cuesta?", roman: "KWAN-toh KWES-tah", english: "How much?" },
+    { native: "Salud!", roman: "sa-LOOD", english: "Cheers!" },
+    { native: "Donde esta...?", roman: "DON-deh es-TAH", english: "Where is...?" }
+];
+
+const itineraryData = [
+    {
+        day: "Day 1: Centro Historico & Culture",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "El Moro Churreria", detail: "Churros and chocolate for breakfast. Open since 1935, neon-lit, and absolutely perfect.", emoji: "🍩" },
+            { time: "10:30 AM", period: "morning", place: "Templo Mayor", detail: "Aztec ruins in the heart of the city. The museum has incredible artifacts from the empire.", emoji: "🏛️" },
+            { time: "12:00 PM", period: "food-stop", place: "🍽️ Tacos El Califa de Leon", detail: "Michelin street tacos. Bistec and costilla on a hot griddle, fresh tortillas. Simple perfection.", emoji: "🌮" },
+            { time: "1:30 PM", period: "afternoon", place: "Palacio de Bellas Artes", detail: "Murals by Rivera and Siqueiros inside an Art Deco and Art Nouveau masterpiece.", emoji: "🏛️" },
+            { time: "3:00 PM", period: "afternoon", place: "Zocalo and Metropolitan Cathedral", detail: "One of the largest public squares in the world. Soak in the grand scale.", emoji: "⛪" },
+            { time: "4:30 PM", period: "food-stop", place: "🍽️ Cafe de Tacuba", detail: "Afternoon mole and enchiladas in a gorgeous tiled restaurant, serving classics since 1912.", emoji: "🍽️" },
+            { time: "6:30 PM", period: "evening", place: "Xochimilco Floating Gardens", detail: "Trajinera boats through ancient Aztec canals. Mariachis and food vendors float alongside.", emoji: "🛶" },
+            { time: "9:00 PM", period: "evening", place: "Salon Tenampa", detail: "Mariachi cantina at Plaza Garibaldi. Tequila and live music since 1925.", emoji: "🎺" }
+        ]
+    },
+    {
+        day: "Day 2: Neighbourhoods & Food",
+        items: [
+            { time: "9:00 AM", period: "morning", place: "Museo Frida Kahlo (Casa Azul)", detail: "Book tickets online. The Blue House where Frida lived, her art, belongings, and gardens.", emoji: "🎨" },
+            { time: "11:30 AM", period: "morning", place: "Coyoacan Market", detail: "Tostadas and artisan stalls in the colourful colonial neighbourhood.", emoji: "🎪" },
+            { time: "1:00 PM", period: "food-stop", place: "🍽️ Contramar", detail: "Tuna tostadas and grilled fish, the most Instagrammed dishes in CDMX. Book ahead.", emoji: "🐟" },
+            { time: "3:00 PM", period: "afternoon", place: "Roma Norte walk", detail: "Tree-lined streets, galleries, Art Deco buildings. The trendiest neighbourhood in the city.", emoji: "🌳" },
+            { time: "4:30 PM", period: "afternoon", place: "Mercado Roma", detail: "Craft mezcal and tacos in a curated food market. Hit the rooftop bar for city views.", emoji: "🏪" },
+            { time: "6:30 PM", period: "evening", place: "Chapultepec Castle", detail: "Sunset city views from the only royal castle in the Americas. Walk through the park.", emoji: "🏰" },
+            { time: "8:00 PM", period: "food-stop", place: "🍽️ Pujol", detail: "Mole madre tasting menu (book ahead!). Enrique Olvera's legendary restaurant.", emoji: "⭐" },
+            { time: "10:00 PM", period: "evening", place: "Limantour", detail: "Cocktails in Roma Norte. Ranked among the world's best bars. The perfect nightcap.", emoji: "🍸" }
+        ]
+    }
+];
+
+// ============================================================
+// MAP
+// ============================================================
+const map = L.map('map', { scrollWheelZoom: true }).setView([19.4326, -99.1332], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+}).addTo(map);
+
+function addMarkers(data, color, group) {
+    data.forEach(item => {
+        if (!item.lat) return;
+        const icon = L.divIcon({
+            html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0f1117;box-shadow:0 2px 8px rgba(0,0,0,0.4)">${item.emoji}</div>`,
+            iconSize: [28, 28],
+            className: ''
+        });
+        L.marker([item.lat, item.lng], { icon })
+            .bindPopup(`
+                <div style="font-family:Segoe UI,sans-serif;min-width:200px">
+                    <b style="font-size:14px">${item.emoji} ${item.name}</b><br>
+                    <span style="color:#666;font-size:12px">${item.cat} · ${item.hood} · ${item.budget}</span><br>
+                    <p style="margin:6px 0;font-size:13px">${item.desc}</p>
+                    ${item.mustOrder ? `<em style="color:#3b82f6;font-size:12px">Must try: ${item.mustOrder}</em>` : ''}
+                    ${item.time ? `<span style="color:#888;font-size:12px">⏱ ${item.time}</span>` : ''}
+                </div>
+            `)
+            .addTo(map);
+    });
+}
+
+addMarkers(foodData, '#fbbf24', 'food');
+addMarkers(landmarkData, '#60a5fa', 'culture');
+addMarkers(nightlifeData, '#f87171', 'nightlife');
+
+// ============================================================
+// CARDS
+// ============================================================
+function budgetClass(b) {
+    if (b === '$') return 'budget-low';
+    if (b === '$$') return 'budget-mid';
+    return 'budget-high';
+}
+
+function catClass(cat) {
+    const foodCats = ['Bakery/cafe','Brunch','Thai','Seafood','Italian','Chinese','Malaysian','Cafe/garden','Burgers','Fine dining','Cafe','Tacos','Churros','Food hall','Mexican','Traditional Mexican','Traditional','Street food','Korean BBQ','Korean traditional','Noodles','Breakfast','Cafe/themed','Indian-Fijian','Indian/Asian','Resort dining','Healthy/cafe','Market','Creole','Beach restaurant','Bar/tour','French/Polynesian','Gastropub','Creole/French','Fijian','Polynesian','Seafood/grill','Cafe/brunch','Bar/restaurant','Beach food','Italian-Mexican','Barbacoa'];
+    const cultureCats = ['Culture','Museum','Architecture','Walk','Scenic','Views','Iconic','Shopping','Entertainment','History','History/Views','Day trip','Art/Architecture'];
+    const natureCats = ['Nature','Nature/Walk','Nature/History','Geothermal'];
+    const beachCats = ['Beach','Adventure','Leisure'];
+    if (foodCats.includes(cat)) return 'food';
+    if (cultureCats.includes(cat)) return 'culture';
+    if (natureCats.includes(cat)) return 'nature';
+    if (beachCats.includes(cat)) return 'beach';
+    return 'nightlife';
+}
+
+function renderCards(containerId, data, showMustOrder = false, showTime = false) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = data.map(item => `
+        <div class="card" data-budget="${item.budget}">
+            <div class="card-emoji">${item.emoji}</div>
+            <div class="card-name">${item.name}</div>
+            <div class="card-meta">
+                <span class="card-tag ${catClass(item.cat)}">${item.cat}</span>
+                <span class="card-tag">${item.hood}</span>
+                <span class="card-tag ${budgetClass(item.budget)}">${item.budget}</span>
+                ${showTime && item.time ? `<span class="card-tag">⏱ ${item.time}</span>` : ''}
+            </div>
+            <div class="card-desc">${item.desc}</div>
+            ${showMustOrder && item.mustOrder ? `<div class="card-must-order">🔥 Must try: ${item.mustOrder}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+renderCards('food-cards', foodData, true);
+renderCards('landmark-cards', landmarkData, false, true);
+renderCards('nightlife-cards', nightlifeData);
+
+// ============================================================
+// FILTERS
+// ============================================================
+function filterCards(section, budget, btn) {
+    const container = document.getElementById(`${section}-cards`);
+    const cards = container.querySelectorAll('.card');
+    cards.forEach(card => {
+        if (budget === 'all' || card.dataset.budget === budget) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+// ============================================================
+// TIMELINE
+// ============================================================
+function renderTimeline() {
+    const container = document.getElementById('timeline');
+    container.innerHTML = itineraryData.map(day => `
+        <div class="timeline-day">
+            <div class="timeline-day-header">${day.day}</div>
+            ${day.items.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-dot ${item.period}"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${item.time}</div>
+                        <div class="timeline-place">${item.emoji} ${item.place}</div>
+                        <div class="timeline-detail">${item.detail}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+}
+renderTimeline();
+
+// ============================================================
+// PHRASES
+// ============================================================
+function renderPhrases() {
+    const container = document.getElementById('phrases-grid');
+    container.innerHTML = phrasesData.map(p => `
+        <div class="phrase-card">
+            <div class="phrase-native">${p.native}</div>
+            <div class="phrase-romanized">${p.roman}</div>
+            <div class="phrase-english">${p.english}</div>
+        </div>
+    `).join('');
+}
+renderPhrases();
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`sec-${name}`).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (name === 'map') {
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+}
+</script>
+</body>
+</html>

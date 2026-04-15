@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Bea | beaglobaltraveler</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🌍</text></svg>">
+    <meta property="og:title" content="About Bea | beaglobaltraveler">
+    <meta property="og:description" content="Venezuelan-born, tech-powered, 74 countries and counting. Meet Beatris Mendez Gandica, the traveler behind @beaglobaltraveler.">
+    <meta property="og:image" content="https://beagandica.github.io/beaglobaltraveler/bea-profile.jpg">
+    <meta property="og:url" content="https://beagandica.github.io/beaglobaltraveler/about.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f1117;color:#e4e4e7;line-height:1.7;min-height:100vh}
+
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+        .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+        .reveal.visible{opacity:1;transform:translateY(0)}
+
+        /* Nav */
+        nav{position:fixed;top:0;left:0;right:0;background:rgba(15,17,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid #1a1d2e;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+        nav a{color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:500;transition:color .3s}
+        nav a:hover{color:#f1f5f9}
+        .nav-brand{font-weight:700;font-size:1.1rem;background:linear-gradient(90deg,#3b82f6,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nav-links{display:flex;gap:24px}
+
+        /* Hero */
+        .hero{background:linear-gradient(135deg,#0f1117 0%,#0b1e1e 30%,#0f2027 60%,#0d1b2a 100%);padding:120px 48px 60px;position:relative;overflow:hidden}
+        .hero::before{content:'✈';position:absolute;font-size:320px;opacity:.03;top:50%;right:-40px;transform:translateY(-50%) rotate(-15deg);color:#94a3b8;-webkit-text-fill-color:#94a3b8;filter:grayscale(1)}
+        .hero-inner{display:flex;align-items:center;gap:56px;max-width:1000px;margin:0 auto;position:relative;z-index:1}
+        .hero-photo{flex-shrink:0}
+        .hero-photo img{width:280px;height:280px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.1);box-shadow:0 8px 40px rgba(0,0,0,.4)}
+        .hero-text{flex:1}
+        .hero h1{font-size:2.8rem;font-weight:800;margin-bottom:8px;background:linear-gradient(90deg,#3b82f6,#f97316,#ef4444,#fbbf24,#3b82f6);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 6s ease infinite;line-height:1.1}
+        .hero .subtitle{font-size:1.2rem;color:#cbd5e1;margin-bottom:14px;font-weight:500}
+        .hero .intro{font-size:.95rem;color:#94a3b8;line-height:1.8;max-width:540px}
+
+        /* Content sections */
+        .content{max-width:860px;margin:0 auto;padding:48px 32px}
+        .section{margin-bottom:56px}
+        .section h2{font-size:1.6rem;font-weight:700;color:#f1f5f9;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+        .section h2 .emoji{font-size:1.5rem}
+        .section p{color:#94a3b8;font-size:.95rem;line-height:1.8;margin-bottom:14px}
+        .section p strong{color:#cbd5e1}
+
+        /* Timeline */
+        .timeline{position:relative;padding-left:32px;margin-top:20px}
+        .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#3b82f6,#f97316,#22c55e,#ef4444)}
+        .timeline-item{position:relative;margin-bottom:28px;padding-left:20px}
+        .timeline-item::before{content:'';position:absolute;left:-28px;top:6px;width:14px;height:14px;border-radius:50%;border:3px solid;background:#0f1117}
+        .timeline-item:nth-child(1)::before{border-color:#3b82f6}
+        .timeline-item:nth-child(2)::before{border-color:#f97316}
+        .timeline-item:nth-child(3)::before{border-color:#22c55e}
+        .timeline-item:nth-child(4)::before{border-color:#ef4444}
+        .timeline-item:nth-child(5)::before{border-color:#eab308}
+        .timeline-item:nth-child(6)::before{border-color:#60a5fa}
+        .timeline-year{font-size:.8rem;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+        .timeline-title{font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:4px}
+        .timeline-desc{font-size:.88rem;color:#64748b;line-height:1.7}
+
+        /* Stats grid */
+        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+        .stat-card{background:#1a1d2e;border:1px solid #2a2d3a;border-radius:14px;padding:24px;text-align:center;transition:all .3s}
+        .stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-color:#3a3d4e}
+        .stat-num{font-size:2.4rem;font-weight:800;margin-bottom:4px}
+        .stat-label{font-size:.75rem;color:#64748b;text-transform:uppercase;letter-spacing:1.5px}
+
+        /* Values cards */
+        .values-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:20px}
+        .value-card{background:#1a1d2e;border:1px solid #2a2d3a;border-radius:14px;padding:24px;transition:all .3s}
+        .value-card:hover{border-color:#3a3d4e;transform:translateY(-2px)}
+        .value-icon{font-size:2rem;margin-bottom:10px}
+        .value-title{font-size:1rem;font-weight:600;color:#f1f5f9;margin-bottom:6px}
+        .value-desc{font-size:.85rem;color:#64748b;line-height:1.6}
+
+        /* Continent flags row */
+        .continent-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+        .continent-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:#1a1d2e;border:1px solid #2a2d3a;border-radius:20px;font-size:.82rem;color:#cbd5e1;transition:all .3s}
+        .continent-badge:hover{border-color:#3a3d4e;transform:translateY(-1px)}
+        .continent-badge .count{font-weight:700}
+
+        /* CTA */
+        .cta-section{text-align:center;padding:60px 32px;background:linear-gradient(135deg,#0b1e1e 0%,#0f2027 100%);border-top:1px solid #1a1d2e}
+        .cta-section h2{font-size:1.6rem;font-weight:700;color:#f1f5f9;margin-bottom:10px}
+        .cta-section p{color:#64748b;font-size:.95rem;margin-bottom:24px}
+        .cta-btn{display:inline-block;padding:14px 36px;background:rgba(255,255,255,0.08);color:#f1f5f9;border:1px solid rgba(255,255,255,0.2);border-radius:30px;text-decoration:none;font-weight:600;font-size:1rem;transition:all .3s;margin:0 8px}
+        .cta-btn:hover{border-color:#f472b6;color:#f9a8d4;transform:translateY(-2px);box-shadow:0 4px 20px rgba(244,114,182,.15)}
+        .cta-btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);border-color:#3b82f6}
+        .cta-btn-primary:hover{border-color:#60a5fa;color:#fff;box-shadow:0 4px 20px rgba(59,130,246,.3)}
+
+        /* Footer */
+        .footer{text-align:center;padding:32px 24px;border-top:1px solid #1a1d2e;color:#475569;font-size:.85rem;line-height:1.8}
+        .footer a{color:#f97316;text-decoration:none}
+        .footer a:hover{text-decoration:underline}
+
+        /* Responsive */
+        @media(max-width:900px){
+            .hero-inner{flex-direction:column;text-align:center;gap:24px}
+            .hero .intro{margin:0 auto}
+            .hero{padding:100px 24px 48px}
+        }
+        @media(max-width:768px){
+            .hero h1{font-size:2.2rem}
+            .hero-photo img{width:200px;height:200px}
+            .stats-grid{grid-template-columns:repeat(2,1fr)}
+            .nav-links{gap:16px}
+            nav{padding:12px 20px}
+        }
+        @media(max-width:480px){
+            .hero h1{font-size:1.8rem}
+            .hero-photo img{width:160px;height:160px}
+            .stats-grid{grid-template-columns:1fr}
+            .content{padding:32px 20px}
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-brand">🌍 beaglobaltraveler</a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#city-grid">Guides</a>
+        <a href="about.html">About</a>
+        <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener">📸 Instagram</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-photo">
+            <img src="bea-profile.jpg" alt="Beatris Mendez Gandica, founder of beaglobaltraveler">
+        </div>
+        <div class="hero-text">
+            <h1>Hola, I'm Bea 👋</h1>
+            <p class="subtitle">The traveler behind @beaglobaltraveler</p>
+            <p class="intro">Venezuelan-born, based in the US, powered by curiosity and a good pair of walking shoes. I've visited 74 countries across 7 continents, 48 out of 50 US states, and I'm just getting started. When I'm not exploring the world, I work in tech and run a nonprofit helping kids learn to code.</p>
+        </div>
+    </div>
+</section>
+
+<div class="content">
+
+    <section class="section reveal">
+        <h2><span class="emoji">✈️</span> By the numbers</h2>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-num" style="color:#f97316">74</div><div class="stat-label">Countries visited</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#3b82f6">48</div><div class="stat-label">of 50 US states</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#22c55e">7</div><div class="stat-label">Continents</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#eab308">10</div><div class="stat-label">Regions explored</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#ef4444">23</div><div class="stat-label">City guides</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#60a5fa">2</div><div class="stat-label">States left</div></div>
+        </div>
+        <p style="margin-top:16px;font-size:.85rem;color:#475569;text-align:center">Still missing: Mississippi and Louisiana. If you've got tips, I'm all ears. 😄</p>
+    </section>
+
+    <section class="section reveal">
+        <h2><span class="emoji">🌎</span> Where I've been</h2>
+        <p>74 countries across 8 regions, from my hometown in Venezuela to the temples of Angkor Wat, from the Northern Lights in Iceland to the beaches of Bora Bora.</p>
+        <div class="continent-row">
+            <span class="continent-badge" style="border-color:#f97316"><span class="fi fi-eu fis" style="font-size:1rem;border-radius:3px"></span> Europe <span class="count" style="color:#f97316">31</span></span>
+            <span class="continent-badge" style="border-color:#4ade80"><span class="fi fi-jp fis" style="font-size:1rem;border-radius:3px"></span> Asia <span class="count" style="color:#4ade80">10</span></span>
+            <span class="continent-badge" style="border-color:#22c55e"><span class="fi fi-br fis" style="font-size:1rem;border-radius:3px"></span> Latin America <span class="count" style="color:#22c55e">10</span></span>
+            <span class="continent-badge" style="border-color:#eab308"><span class="fi fi-ae fis" style="font-size:1rem;border-radius:3px"></span> Middle East <span class="count" style="color:#eab308">6</span></span>
+            <span class="continent-badge" style="border-color:#ef4444"><span class="fi fi-ke fis" style="font-size:1rem;border-radius:3px"></span> Africa <span class="count" style="color:#ef4444">6</span></span>
+            <span class="continent-badge" style="border-color:#14b8a6"><span class="fi fi-jm fis" style="font-size:1rem;border-radius:3px"></span> Caribbean <span class="count" style="color:#14b8a6">5 + 5</span></span>
+            <span class="continent-badge" style="border-color:#3b82f6"><span class="fi fi-us fis" style="font-size:1rem;border-radius:3px"></span> North America <span class="count" style="color:#3b82f6">3</span></span>
+            <span class="continent-badge" style="border-color:#60a5fa"><span class="fi fi-au fis" style="font-size:1rem;border-radius:3px"></span> Oceania <span class="count" style="color:#60a5fa">3 + 1</span></span>
+        </div>
+    </section>
+
+    <section class="section reveal">
+        <h2><span class="emoji">📖</span> My story</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">The beginning</div>
+                <div class="timeline-title">Born in Venezuela 🇻🇪</div>
+                <div class="timeline-desc">Grew up in a country that taught me resilience, warmth, and the best arepas in the world. My first taste of travel was family trips across Latin America.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">The move</div>
+                <div class="timeline-title">New chapter in the United States 🇺🇸</div>
+                <div class="timeline-desc">Moved to the US and dove headfirst into tech. Built a career as a Product Manager, learning to ship products and solve problems at scale.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">The mission</div>
+                <div class="timeline-title">Founded Nuevo Foundation 🤖</div>
+                <div class="timeline-desc">Started a nonprofit to teach kids (especially from underrepresented communities) how to code. Because if I can go from Venezuela to tech, others can too.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">The obsession</div>
+                <div class="timeline-title">Caught the travel bug 🌍</div>
+                <div class="timeline-desc">What started as "let me see a few countries" turned into a full-blown obsession. 74 countries later, I realized the best way to learn about the world is to show up and eat the food.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2024-2025</div>
+                <div class="timeline-title">Africa, South America, and Oceania 🦁</div>
+                <div class="timeline-desc">Seychelles, Kenya, Tanzania, Madagascar, Mauritius. Then Brazil, Chile, Argentina, Paraguay, Uruguay. Australia and New Zealand next. 48 of 50 US states checked off.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">Now</div>
+                <div class="timeline-title">Building beaglobaltraveler ✈️</div>
+                <div class="timeline-desc">Turning years of travel into interactive city guides with real data, interactive maps, food picks, and honest recommendations. No sponsored content, no affiliate links, just real experiences.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal">
+        <h2><span class="emoji">💡</span> What drives this site</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">🗺️</div>
+                <div class="value-title">Actually been there</div>
+                <div class="value-desc">Every city guide is based on my real visits. No SEO-farm content, no "top 10 things" copied from other blogs. I walked those streets.</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🍜</div>
+                <div class="value-title">Food first</div>
+                <div class="value-desc">I believe you understand a culture through its food. Every guide leads with restaurants, street food, and dishes you should not miss.</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">📊</div>
+                <div class="value-title">Data, not vibes</div>
+                <div class="value-desc">Interactive maps with pinned locations, budget ranges, neighborhood breakdowns, and day-by-day itineraries. Built by a PM who loves structure.</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🚫</div>
+                <div class="value-title">Zero sponsored content</div>
+                <div class="value-desc">No affiliate links, no "this post was sponsored by", no cookie popups begging for your email. Just honest recommendations.</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🌙</div>
+                <div class="value-title">Built different</div>
+                <div class="value-desc">Dark theme, clean design, interactive maps. This is a travel site built by an engineer, not a WordPress template with stock photos.</div>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">🤝</div>
+                <div class="value-title">Open source</div>
+                <div class="value-desc">The entire site is on GitHub. Want to see how it's built? Want to suggest a city? PRs welcome.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal">
+        <h2><span class="emoji">🎯</span> Next on the list</h2>
+        <p>Because 74 is just a number and the world has 195 countries. Here's what's coming:</p>
+        <div class="continent-row" style="margin-top:12px">
+            <span class="continent-badge" style="border-color:#f97316">🇰🇷 Seoul, South Korea</span>
+            <span class="continent-badge" style="border-color:#22c55e">🇮🇩 Bali, Indonesia</span>
+            <span class="continent-badge" style="border-color:#eab308">🇵🇦 Panama</span>
+            <span class="continent-badge" style="border-color:#3b82f6">🇨🇷 Costa Rica</span>
+            <span class="continent-badge" style="border-color:#ef4444">🇸🇻 El Salvador</span>
+            <span class="continent-badge" style="border-color:#60a5fa">🇦🇺 Australia (round 2)</span>
+            <span class="continent-badge" style="border-color:#4ade80">🇳🇿 New Zealand (round 2)</span>
+        </div>
+        <p style="margin-top:16px;font-size:.88rem">Seoul and Bali are next on the list, si Dios quiere. 🙏</p>
+    </section>
+
+</div>
+
+<section class="cta-section reveal">
+    <h2>Come travel with me</h2>
+    <p>Follow along on Instagram or explore the city guides</p>
+    <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener" class="cta-btn">📸 @beaglobaltraveler</a>
+    <a href="index.html" class="cta-btn cta-btn-primary">🌍 Explore Guides</a>
+</section>
+
+<footer class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener">@beaglobaltraveler</a> · <a href="https://github.com/beagandica/beaglobaltraveler" target="_blank" rel="noopener">GitHub</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</footer>
+
+<script>
+var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)});
+</script>
+</body>
+</html>

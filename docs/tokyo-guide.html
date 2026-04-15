@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ beaglobaltraveler | Tokyo Travel Guide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '✈️';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -30px;
+            right: -20px;
+            transform: rotate(-15deg);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 24px; }
+        .hero .stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .hero .stat { text-align: center; }
+        .hero .stat-number { font-size: 2rem; font-weight: 700; color: #60a5fa; }
+        .hero .stat-label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .nav {
+            display: flex; justify-content: center; gap: 8px; padding: 20px;
+            background: #161822; position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid #2a2d3a;
+        }
+        .nav button {
+            padding: 10px 24px; border: 1px solid #2a2d3a; border-radius: 24px;
+            background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active { background: #60a5fa; color: #0f1117; border-color: #60a5fa; font-weight: 600; }
+        .section { display: none; padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+        .section.active { display: block; }
+        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 24px; text-align: center; }
+        #map { width: 100%; height: 500px; border-radius: 16px; border: 1px solid #2a2d3a; }
+        .map-legend { display: flex; justify-content: center; gap: 24px; margin-top: 16px; flex-wrap: wrap; }
+        .map-legend span { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: #94a3b8; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .filter-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 8px 20px; border: 1px solid #2a2d3a; border-radius: 20px;
+            background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.85rem; transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card {
+            background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 16px;
+            padding: 24px; transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { border-color: #60a5fa; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1); }
+        .card-emoji { font-size: 2rem; margin-bottom: 12px; }
+        .card-name { font-size: 1.15rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+        .card-meta { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .card-tag { font-size: 0.78rem; padding: 3px 10px; border-radius: 12px; background: #2a2d3a; color: #94a3b8; }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e3a5f; color: #60a5fa; }
+        .card-tag.nightlife { background: #4a0e0e; color: #f87171; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc { font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px; }
+        .card-must-order { font-size: 0.85rem; color: #60a5fa; font-style: italic; }
+        .card-transit { font-size: 0.8rem; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2d3a; }
+        .timeline { max-width: 800px; margin: 0 auto; position: relative; }
+        .timeline::before {
+            content: ''; position: absolute; left: 30px; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa); border-radius: 3px;
+        }
+        .timeline-day { margin-bottom: 40px; }
+        .timeline-day-header { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; padding-left: 60px; color: #60a5fa; }
+        .timeline-item { display: flex; gap: 20px; margin-bottom: 16px; align-items: flex-start; }
+        .timeline-dot { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; margin-top: 4px; margin-left: 21px; z-index: 1; border: 3px solid #0f1117; }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
+        .timeline-content { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; flex: 1; }
+        .timeline-time { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .timeline-place { font-size: 1.05rem; font-weight: 600; color: #f1f5f9; }
+        .timeline-detail { font-size: 0.88rem; color: #94a3b8; margin-top: 4px; }
+        .timeline-transit { font-size: 0.8rem; color: #60a5fa; margin-top: 8px; }
+        .phrases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 900px; margin: 24px auto 0; }
+        .phrase-card { background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; text-align: center; }
+        .phrase-local { font-size: 1.8rem; margin-bottom: 4px; }
+        .phrase-romanized { font-size: 0.9rem; color: #38bdf8; font-style: italic; margin-bottom: 8px; }
+        .phrase-english { font-size: 0.85rem; color: #64748b; }
+        .footer { text-align: center; padding: 40px; color: #475569; font-size: 0.9rem; }
+        .footer span { color: #60a5fa; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .stats { gap: 20px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>✈️ beaglobaltraveler | Tokyo</h1>
+    <p class="subtitle">Your AI travel companion's guide to the electric heart of Japan</p>
+    <div class="stats">
+        <div class="stat"><div class="stat-number">8</div><div class="stat-label">Neighborhoods</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Restaurants</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Landmarks</div></div>
+        <div class="stat"><div class="stat-number">5</div><div class="stat-label">Nightlife</div></div>
+    </div>
+</div>
+
+<div class="nav">
+    <button class="active" onclick="showSection('map')">🗺️ Map</button>
+    <button onclick="showSection('food')">🍜 Food</button>
+    <button onclick="showSection('landmarks')">⛩️ Landmarks</button>
+    <button onclick="showSection('nightlife')">🌃 Nightlife</button>
+    <button onclick="showSection('itinerary')">📅 Itinerary</button>
+    <button onclick="showSection('phrases')">💬 Phrases</button>
+</div>
+
+<div id="sec-map" class="section active">
+    <h2 class="section-title">🗺️ Tokyo at a Glance</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#60a5fa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature</span>
+    </div>
+</div>
+
+<div id="sec-food" class="section">
+    <h2 class="section-title">🍜 Where to Eat in Tokyo</h2>
+    <div class="filter-bar" id="food-filters"></div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<div id="sec-landmarks" class="section">
+    <h2 class="section-title">⛩️ Must-See Landmarks</h2>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<div id="sec-nightlife" class="section">
+    <h2 class="section-title">🌃 Tokyo After Dark</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<div id="sec-itinerary" class="section">
+    <h2 class="section-title">📅 2-Day Tokyo Itinerary</h2>
+    <p style="text-align:center;color:#94a3b8;margin-bottom:32px">Curated by beaglobaltraveler ✈️ , foodie + culture vibe</p>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div id="sec-phrases" class="section">
+    <h2 class="section-title">💬 Survival Japanese</h2>
+    <p style="text-align:center;color:#94a3b8;margin-bottom:8px">The phrases that'll make locals smile</p>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> ·
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> ·
+    <a href="index.html" style="color:#60a5fa">All Cities</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // ===== DATA =====
+    const foodData = [
+        { name: "Ichiran Ramen", cat: "Ramen", hood: "Shibuya", budget: "$", desc: "Solo ramen booths with customizable broth. The tonkotsu is silky, rich, and exactly what you need at midnight.", mustOrder: "Tonkotsu ramen with extra-firm noodles", lat: 35.6595, lng: 139.7005, emoji: "🍜" },
+        { name: "Tsukiji Outer Market", cat: "Street food", hood: "Tsukiji", budget: "$-$$", desc: "The old fish market's outer stalls still serve the freshest seafood in Tokyo. Go early morning.", mustOrder: "Tamagoyaki, fresh uni, tuna skewers", lat: 35.6654, lng: 139.7707, emoji: "🐟" },
+        { name: "Afuri", cat: "Ramen", hood: "Ebisu", budget: "$$", desc: "Yuzu shio ramen that's lighter and more fragrant than the heavy tonkotsu everywhere else.", mustOrder: "Yuzu shio ramen", lat: 35.6467, lng: 139.7103, emoji: "🍜" },
+        { name: "Gonpachi", cat: "Izakaya", hood: "Roppongi", budget: "$$", desc: "The restaurant that inspired Kill Bill's fight scene. Great soba and yakitori in a dramatic interior.", mustOrder: "Handmade soba, grilled chicken skewers", lat: 35.6604, lng: 139.7262, emoji: "🏮" },
+        { name: "Sushi Dai", cat: "Sushi", hood: "Toyosu", budget: "$$$", desc: "Worth the early morning queue at Toyosu Market. Omakase from chefs who've been doing this for decades.", mustOrder: "Omakase chef's choice set", lat: 35.6455, lng: 139.7838, emoji: "🍣" },
+        { name: "Omoide Yokocho", cat: "Yakitori alley", hood: "Shinjuku", budget: "$", desc: "Smoky, cramped alleyway grills near the station. Locals call it Memory Lane but the skewers are legendary.", mustOrder: "Chicken skin, tsukune, cold beer", lat: 35.6938, lng: 139.6989, emoji: "🍢" },
+        { name: "Melon Pan Ice Cream", cat: "Street food", hood: "Asakusa", budget: "$", desc: "Warm crispy melon bread filled with cold ice cream. Found near Senso-ji temple.", mustOrder: "Melon pan with vanilla ice cream", lat: 35.7117, lng: 139.7966, emoji: "🍈" },
+        { name: "Uobei Sushi", cat: "Conveyor sushi", hood: "Shibuya", budget: "$", desc: "Sushi arrives on a bullet train track to your seat. Order by tablet. Fun, cheap, surprisingly good.", mustOrder: "Salmon, tuna, tamago", lat: 35.6607, lng: 139.6983, emoji: "🚄" },
+        { name: "Narisawa", cat: "Fine dining", hood: "Minato", budget: "$$$", desc: "Two Michelin stars, innovative forest cuisine that tells a story through each course. Reserve weeks ahead.", mustOrder: "Bread of the Forest, seasonal tasting menu", lat: 35.6722, lng: 139.7240, emoji: "⭐" },
+        { name: "Fuunji", cat: "Tsukemen", hood: "Shinjuku", budget: "$", desc: "Tokyo's best tsukemen (dipping noodles). The broth is impossibly thick and flavorful. Always a queue.", mustOrder: "Tsukemen with extra chashu", lat: 35.6896, lng: 139.6997, emoji: "🍜" }
+    ];
+
+    const landmarkData = [
+        { name: "Senso-ji Temple", cat: "Culture", hood: "Asakusa", budget: "Free", time: "1-2 hours", desc: "Tokyo's oldest temple. Walk through the massive Kaminarimon gate and Nakamise shopping street. Best at dawn before crowds.", lat: 35.7148, lng: 139.7967, emoji: "⛩️" },
+        { name: "Meiji Shrine", cat: "Culture", hood: "Harajuku", budget: "Free", time: "1-2 hours", desc: "A peaceful Shinto shrine surrounded by a forested park. The torii gate entrance is massive and calming.", lat: 35.6764, lng: 139.6993, emoji: "🌳" },
+        { name: "Tokyo Skytree", cat: "Views", hood: "Sumida", budget: "$$", time: "1-2 hours", desc: "At 634 meters, the tallest structure in Japan. The observation decks offer views on clear days all the way to Mt. Fuji.", lat: 35.7101, lng: 139.8107, emoji: "🗼" },
+        { name: "TeamLab Borderless", cat: "Art", hood: "Azabudai", budget: "$$$", time: "2-3 hours", desc: "Immersive digital art museum where the installations flow between rooms. No two visits are the same.", lat: 35.6585, lng: 139.7313, emoji: "🎨" },
+        { name: "Shibuya Crossing", cat: "Iconic", hood: "Shibuya", budget: "Free", time: "30 min", desc: "The world's busiest pedestrian crossing. Watch from the Starbucks above or just walk across and feel the energy.", lat: 35.6595, lng: 139.7004, emoji: "🚶" },
+        { name: "Imperial Palace East Gardens", cat: "Nature", hood: "Chiyoda", budget: "Free", time: "1-2 hours", desc: "Beautifully maintained gardens on the grounds of the Imperial Palace. Quiet escape in central Tokyo.", lat: 35.6852, lng: 139.7528, emoji: "🌿" },
+        { name: "Akihabara Electric Town", cat: "Culture", hood: "Akihabara", budget: "Free-$$", time: "2-3 hours", desc: "Multi-story arcades, anime shops, electronics stores, and maid cafes. Sensory overload in the best way.", lat: 35.7023, lng: 139.7745, emoji: "🕹️" },
+        { name: "Shinjuku Gyoen National Garden", cat: "Nature", hood: "Shinjuku", budget: "$", time: "1-2 hours", desc: "One of Tokyo's best parks. Japanese, French, and English garden styles. Peak cherry blossom destination.", lat: 35.6852, lng: 139.7100, emoji: "🌸" },
+        { name: "Tsukiji/Toyosu Fish Market", cat: "Culture", hood: "Toyosu", budget: "Free", time: "2-3 hours", desc: "Watch the tuna auctions at Toyosu (reserve ahead) and eat at the outer market stalls. Go before 8 AM.", lat: 35.6455, lng: 139.7838, emoji: "🐟" },
+        { name: "Robot Restaurant", cat: "Entertainment", hood: "Shinjuku", budget: "$$$", time: "1.5 hours", desc: "Neon robots, lasers, taiko drums. Completely absurd and completely unforgettable. Pure Tokyo chaos.", lat: 35.6940, lng: 139.7036, emoji: "🤖" }
+    ];
+
+    const nightlifeData = [
+        { name: "Golden Gai", cat: "Bars", hood: "Shinjuku", budget: "$-$$", desc: "Six narrow alleys packed with over 200 tiny bars, each seating 5-10 people. Some charge a cover, all have personality.", lat: 35.6938, lng: 139.7036, emoji: "🍶" },
+        { name: "Roppongi Hills Area", cat: "Clubs/bars", hood: "Roppongi", budget: "$$-$$$", desc: "Tokyo's international party district. Big clubs, rooftop bars, open late. Draws an expat crowd.", lat: 35.6605, lng: 139.7292, emoji: "🌃" },
+        { name: "Nonbei Yokocho", cat: "Bars", hood: "Shibuya", budget: "$$", desc: "Drunkard's Alley, a quieter, more intimate version of Golden Gai near Shibuya Station.", lat: 35.6590, lng: 139.6998, emoji: "🏮" },
+        { name: "Womb", cat: "Club", hood: "Shibuya", budget: "$$", desc: "One of Asia's best electronic music clubs. Four floors, top international DJs, world-class sound system.", lat: 35.6568, lng: 139.6960, emoji: "🎧" },
+        { name: "Zoetrope", cat: "Whisky bar", hood: "Shinjuku", budget: "$$-$$$", desc: "Over 300 Japanese whiskies in a tiny bar. The owner knows every bottle's story. Reservations recommended.", lat: 35.6930, lng: 139.7010, emoji: "🥃" }
+    ];
+
+    const itineraryData = [
+        {
+            day: "Day 1: Traditional Tokyo & Street Food",
+            items: [
+                { time: "8:00 AM", period: "morning", place: "Tsukiji Outer Market", detail: "Start early for the freshest tamagoyaki, uni, and tuna skewers. The stalls open at dawn and the best stuff goes fast.", transit: "🚇 Hibiya Line, Tsukiji Station Exit 1", emoji: "🐟" },
+                { time: "10:00 AM", period: "morning", place: "Senso-ji Temple", detail: "Walk through the iconic Kaminarimon gate and browse Nakamise shopping street for souvenirs and snacks.", transit: "🚇 Ginza Line, Asakusa Station Exit 1", emoji: "⛩️" },
+                { time: "11:30 AM", period: "morning", place: "Melon Pan Ice Cream near Senso-ji", detail: "Warm crispy melon bread with cold ice cream. The perfect mid-morning treat.", transit: "🚶 2 min walk from temple", emoji: "🍈" },
+                { time: "12:30 PM", period: "food-stop", place: "🍜 Lunch: Fuunji Tsukemen", detail: "Join the queue for Tokyo's best dipping noodles. The impossibly thick broth is worth every minute of waiting.", transit: "🚇 JR Yamanote Line to Shinjuku, 5 min walk", emoji: "🍜" },
+                { time: "2:00 PM", period: "afternoon", place: "Meiji Shrine", detail: "Peaceful forested shrine in the heart of Harajuku. The towering torii gate sets the mood immediately.", transit: "🚇 JR Yamanote Line, Harajuku Station", emoji: "🌳" },
+                { time: "3:30 PM", period: "afternoon", place: "Harajuku & Takeshita Street", detail: "Colorful fashion, crepe shops, and people-watching at its finest. Tokyo's youth culture epicenter.", transit: "🚶 5 min walk from Meiji Shrine", emoji: "🌈" },
+                { time: "5:30 PM", period: "evening", place: "Shibuya Crossing", detail: "Experience the world's busiest crossing at rush hour. Watch from above at the Shibuya Sky observation deck.", transit: "🚇 JR Yamanote Line, Shibuya Station", emoji: "🚶" },
+                { time: "7:00 PM", period: "food-stop", place: "🍽️ Dinner: Ichiran Ramen", detail: "Customize your tonkotsu ramen in a solo booth. Extra-firm noodles, extra garlic, maximum richness.", transit: "🚶 5 min walk from Shibuya Station", emoji: "🍜" },
+                { time: "9:00 PM", period: "evening", place: "Golden Gai bar hopping", detail: "Pick two or three of the 200+ tiny bars in these narrow alleys. Each one is a different universe.", transit: "🚇 JR to Shinjuku, 10 min walk", emoji: "🍶" }
+            ]
+        },
+        {
+            day: "Day 2: Modern Tokyo & Culture",
+            items: [
+                { time: "9:00 AM", period: "morning", place: "Shinjuku Gyoen National Garden", detail: "Three garden styles in one park. Japanese, French, and English. Stunning during cherry blossom or autumn.", transit: "🚇 Marunouchi Line, Shinjuku Gyoenmae Station", emoji: "🌸" },
+                { time: "11:00 AM", period: "morning", place: "Akihabara Electric Town", detail: "Multi-story arcades, anime mega-stores, and maid cafes. Even if you're not an otaku, the energy is incredible.", transit: "🚇 JR Yamanote Line, Akihabara Station", emoji: "🕹️" },
+                { time: "12:30 PM", period: "food-stop", place: "🍜 Lunch: Uobei Conveyor Sushi", detail: "Order by tablet, sushi arrives on a bullet train track. Fun, fast, and surprisingly excellent quality.", transit: "🚇 JR to Shibuya, 5 min walk", emoji: "🚄" },
+                { time: "2:00 PM", period: "afternoon", place: "TeamLab Borderless", detail: "Immersive digital art that flows between rooms. Wear dark clothes for better photo contrast. Allow 2-3 hours.", transit: "🚇 Hibiya Line, Roppongi or Azabudai Hills area", emoji: "🎨" },
+                { time: "5:00 PM", period: "afternoon", place: "Tokyo Skytree", detail: "634 meters up for panoramic views. On clear days you can see Mt. Fuji. Time it for sunset.", transit: "🚇 Hanzomon Line, Oshiage Station", emoji: "🗼" },
+                { time: "7:00 PM", period: "food-stop", place: "🍽️ Dinner: Gonpachi", detail: "The Kill Bill restaurant. Dramatic interior, excellent soba and yakitori. A cinematic dining experience.", transit: "🚇 Hibiya Line, Roppongi Station", emoji: "🏮" },
+                { time: "9:00 PM", period: "evening", place: "Omoide Yokocho (Memory Lane)", detail: "Smoky alleyway yakitori grills near Shinjuku Station. Grab a stool, order skewers and a cold beer.", transit: "🚇 JR to Shinjuku, west exit", emoji: "🍢" }
+            ]
+        }
+    ];
+
+    const phrasesData = [
+        { local: "こんにちは", roman: "konnichiwa", english: "Hello" },
+        { local: "ありがとうございます", roman: "arigatou gozaimasu", english: "Thank you" },
+        { local: "すみません", roman: "sumimasen", english: "Excuse me" },
+        { local: "おいしい!", roman: "oishii!", english: "Delicious!" },
+        { local: "いくらですか?", roman: "ikura desu ka?", english: "How much?" },
+        { local: "...はどこですか?", roman: "...wa doko desu ka?", english: "Where is...?" },
+        { local: "お会計お願いします", roman: "okaikei onegaishimasu", english: "The bill please" },
+        { local: "乾杯!", roman: "kanpai!", english: "Cheers!" }
+    ];
+
+    // ===== MAP =====
+    const map = L.map('map').setView([35.6762, 139.6503], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        maxZoom: 19
+    }).addTo(map);
+
+    function addMarkers(data, color, type) {
+        data.forEach(d => {
+            const icon = L.divIcon({
+                html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid #0f1117;box-shadow:0 0 8px ${color}80"></div>`,
+                className: '', iconSize: [14, 14]
+            });
+            L.marker([d.lat, d.lng], { icon })
+                .addTo(map)
+                .bindPopup(`<div style="font-size:14px;font-weight:600">${d.emoji} ${d.name}</div><div style="font-size:12px;color:#666">${d.hood} · ${d.cat}</div>`);
+        });
+    }
+
+    addMarkers(foodData, '#fbbf24', 'food');
+    addMarkers(landmarkData, '#60a5fa', 'culture');
+    addMarkers(nightlifeData, '#f87171', 'nightlife');
+
+    // ===== HELPERS =====
+    function catClass(cat) {
+        const c = cat.toLowerCase();
+        if (['ramen','street food','izakaya','sushi','yakitori alley','conveyor sushi','tsukemen','fine dining'].includes(c)) return 'food';
+        if (['culture','museum','architecture','walk','scenic','views','iconic','art','entertainment'].includes(c)) return 'culture';
+        if (['bars','club','clubs/bars','whisky bar','lounge','speakeasy','rooftop'].includes(c)) return 'nightlife';
+        if (['nature','park','garden'].includes(c)) return 'nature';
+        return '';
+    }
+
+    function budgetClass(b) {
+        if (!b) return '';
+        const d = b.replace(/[^$]/g, '').length;
+        if (d <= 1) return 'budget-low';
+        if (d === 2) return 'budget-mid';
+        return 'budget-high';
+    }
+
+    // ===== FOOD CARDS & FILTERS =====
+    const foodCats = ['All', ...new Set(foodData.map(f => f.cat))];
+    const filterBar = document.getElementById('food-filters');
+    foodCats.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (i === 0 ? ' active' : '');
+        btn.textContent = c;
+        btn.onclick = () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderFoodCards(c === 'All' ? null : c);
+        };
+        filterBar.appendChild(btn);
+    });
+
+    function renderFoodCards(filter) {
+        const container = document.getElementById('food-cards');
+        const items = filter ? foodData.filter(f => f.cat === filter) : foodData;
+        container.innerHTML = items.map(f => `
+            <div class="card">
+                <div class="card-emoji">${f.emoji}</div>
+                <div class="card-name">${f.name}</div>
+                <div class="card-meta">
+                    <span class="card-tag ${catClass(f.cat)}">${f.cat}</span>
+                    <span class="card-tag ${budgetClass(f.budget)}">${f.budget}</span>
+                    <span class="card-tag">${f.hood}</span>
+                </div>
+                <div class="card-desc">${f.desc}</div>
+                <div class="card-must-order">Must order: ${f.mustOrder}</div>
+            </div>
+        `).join('');
+    }
+    renderFoodCards();
+
+    // ===== LANDMARK CARDS =====
+    document.getElementById('landmark-cards').innerHTML = landmarkData.map(l => `
+        <div class="card">
+            <div class="card-emoji">${l.emoji}</div>
+            <div class="card-name">${l.name}</div>
+            <div class="card-meta">
+                <span class="card-tag ${catClass(l.cat)}">${l.cat}</span>
+                <span class="card-tag ${budgetClass(l.budget)}">${l.budget}</span>
+                <span class="card-tag">${l.hood}</span>
+                <span class="card-tag">⏱️ ${l.time}</span>
+            </div>
+            <div class="card-desc">${l.desc}</div>
+        </div>
+    `).join('');
+
+    // ===== NIGHTLIFE CARDS =====
+    document.getElementById('nightlife-cards').innerHTML = nightlifeData.map(n => `
+        <div class="card">
+            <div class="card-emoji">${n.emoji}</div>
+            <div class="card-name">${n.name}</div>
+            <div class="card-meta">
+                <span class="card-tag ${catClass(n.cat)}">${n.cat}</span>
+                <span class="card-tag ${budgetClass(n.budget)}">${n.budget}</span>
+                <span class="card-tag">${n.hood}</span>
+            </div>
+            <div class="card-desc">${n.desc}</div>
+        </div>
+    `).join('');
+
+    // ===== ITINERARY =====
+    document.getElementById('timeline').innerHTML = itineraryData.map(day => `
+        <div class="timeline-day">
+            <div class="timeline-day-header">${day.day}</div>
+            ${day.items.map(item => `
+                <div class="timeline-item">
+                    <div class="timeline-dot ${item.period}"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${item.time}</div>
+                        <div class="timeline-place">${item.emoji} ${item.place}</div>
+                        <div class="timeline-detail">${item.detail}</div>
+                        <div class="timeline-transit">${item.transit}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+
+    // ===== PHRASES =====
+    document.getElementById('phrases-grid').innerHTML = phrasesData.map(p => `
+        <div class="phrase-card">
+            <div class="phrase-local">${p.local}</div>
+            <div class="phrase-romanized">${p.roman}</div>
+            <div class="phrase-english">${p.english}</div>
+        </div>
+    `).join('');
+
+    // ===== NAVIGATION =====
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + id).classList.add('active');
+        event.target.classList.add('active');
+        if (id === 'map') setTimeout(() => map.invalidateSize(), 100);
+    }
+</script>
+</body>
+</html>
