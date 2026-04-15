@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderly - Your AI Travel Companion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e4e7;
+            min-height: 100vh;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 80px 40px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '\2708\FE0F';
+            position: absolute;
+            font-size: 300px;
+            opacity: 0.04;
+            top: -60px;
+            right: -40px;
+            transform: rotate(-15deg);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle { font-size: 1.3rem; color: #94a3b8; margin-bottom: 8px; }
+        .hero .tagline { font-size: 0.95rem; color: #64748b; max-width: 600px; margin: 0 auto 32px; }
+        .hero .stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+        .stat-number { font-size: 2.2rem; font-weight: 700; color: #60a5fa; }
+        .stat-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
+        .search-section { text-align: center; padding: 40px 20px 20px; max-width: 600px; margin: 0 auto; }
+        .search-box {
+            width: 100%; padding: 16px 24px; border-radius: 30px; border: 1px solid #2a2d3a;
+            background: #1a1d2e; color: #e4e4e7; font-size: 1.1rem; outline: none; transition: all 0.3s;
+        }
+        .search-box::placeholder { color: #4a5568; }
+        .search-box:focus { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.15); }
+        .section-header { text-align: center; padding: 40px 20px 24px; }
+        .section-header h2 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
+        .section-header p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
+        .city-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 20px 40px;
+        }
+        .city-card {
+            background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 16px;
+            padding: 28px 24px; cursor: pointer; transition: all 0.3s;
+            text-decoration: none; color: inherit; position: relative; overflow: hidden; display: block;
+        }
+        .city-card:hover { border-color: #60a5fa; transform: translateY(-4px); box-shadow: 0 12px 40px rgba(96, 165, 250, 0.12); }
+        .city-card.coming-soon { opacity: 0.5; cursor: default; }
+        .city-card.coming-soon:hover { border-color: #2a2d3a; transform: none; box-shadow: none; }
+        .city-flag { font-size: 2.8rem; margin-bottom: 12px; }
+        .city-name { font-size: 1.2rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+        .city-country { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+        .city-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .city-tag { font-size: 0.72rem; padding: 3px 10px; border-radius: 10px; background: #2a2d3a; color: #94a3b8; }
+        .city-tag.food { background: #422006; color: #fbbf24; }
+        .city-tag.culture { background: #1e1b4b; color: #a78bfa; }
+        .city-tag.nightlife { background: #4a044e; color: #e879f9; }
+        .city-tag.nature { background: #052e16; color: #4ade80; }
+        .city-tag.shopping { background: #172554; color: #93c5fd; }
+        .badge { position: absolute; top: 12px; right: 12px; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
+        .badge.live { background: #064e3b; color: #6ee7b7; }
+        .badge.soon { background: #2a2d3a; color: #64748b; }
+        .features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; max-width: 1000px; margin: 0 auto; padding: 0 20px 60px;
+        }
+        .feature { text-align: center; padding: 24px; }
+        .feature-emoji { font-size: 2rem; margin-bottom: 12px; }
+        .feature-title { font-size: 1rem; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
+        .feature-desc { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+        .footer { text-align: center; padding: 40px 20px; border-top: 1px solid #1a1d2e; color: #475569; font-size: 0.85rem; }
+        .footer a { color: #60a5fa; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero { padding: 50px 20px 40px; }
+            .city-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) { .city-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Wanderly</h1>
+    <p class="subtitle">Your AI travel companion</p>
+    <p class="tagline">Curated city guides with interactive maps, local food picks, neighborhood walks, and day-by-day itineraries. Built with a Copilot agent that grows its own knowledge.</p>
+    <div class="stats">
+        <div><div class="stat-number">22</div><div class="stat-label">Cities</div></div>
+        <div><div class="stat-number">50+</div><div class="stat-label">Recommendations</div></div>
+        <div><div class="stat-number">6</div><div class="stat-label">Categories</div></div>
+    </div>
+</div>
+
+<div class="search-section">
+    <input type="text" class="search-box" id="search" placeholder="Search cities... (e.g., Seoul, Tokyo, Paris)" oninput="filterCities()">
+</div>
+
+<div class="section-header"><h2>Explore a city</h2><p>Click any city to open its interactive guide</p></div>
+<div class="city-grid" id="city-grid"></div>
+
+<div class="section-header"><h2>What you get</h2></div>
+<div class="features">
+    <div class="feature"><div class="feature-emoji">🗺️</div><div class="feature-title">Interactive maps</div><div class="feature-desc">Every restaurant, landmark, and bar pinned on a dark-theme map with emoji markers</div></div>
+    <div class="feature"><div class="feature-emoji">🍜</div><div class="feature-title">Local food picks</div><div class="feature-desc">Curated restaurants with budget levels, must-order items, and honest opinions</div></div>
+    <div class="feature"><div class="feature-emoji">📅</div><div class="feature-title">Day-by-day itineraries</div><div class="feature-desc">Visual timelines with morning, afternoon, and evening blocks grouped by neighborhood</div></div>
+    <div class="feature"><div class="feature-emoji">💬</div><div class="feature-title">Survival phrases</div><div class="feature-desc">Essential local phrases with romanization so you can order food and say thank you</div></div>
+</div>
+
+<div class="footer">Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank">@beaglobaltraveler</a> · <a href="https://github.com/beagandica/wanderly-travel">GitHub</a><br><small>&copy; 2026 Wanderly Travel</small></div>
+
+<script>
+const cities = [
+    { name: "Seoul", country: "South Korea", flag: "\ud83c\uddf0\ud83c\uddf7", file: "seoul-guide.html", live: true, tags: ["food", "culture", "nightlife", "shopping"] },
+    { name: "Bucheon", country: "South Korea", flag: "\ud83c\uddf0\ud83c\uddf7", file: null, live: false, tags: ["food", "culture", "nature"] },
+    { name: "Tokyo", country: "Japan", flag: "\ud83c\uddef\ud83c\uddf5", file: null, live: false, tags: ["food", "culture", "nightlife", "shopping"] },
+    { name: "Paris", country: "France", flag: "\ud83c\uddeb\ud83c\uddf7", file: null, live: false, tags: ["food", "culture", "shopping"] },
+    { name: "London", country: "United Kingdom", flag: "\ud83c\uddec\ud83c\udde7", file: null, live: false, tags: ["culture", "nightlife", "shopping"] },
+    { name: "New York", country: "United States", flag: "\ud83c\uddfa\ud83c\uddf8", file: null, live: false, tags: ["food", "culture", "nightlife", "shopping"] },
+    { name: "Bangkok", country: "Thailand", flag: "\ud83c\uddf9\ud83c\udded", file: null, live: false, tags: ["food", "culture", "nightlife"] },
+    { name: "Dubai", country: "UAE", flag: "\ud83c\udde6\ud83c\uddea", file: null, live: false, tags: ["shopping", "culture"] },
+    { name: "Singapore", country: "Singapore", flag: "\ud83c\uddf8\ud83c\uddec", file: null, live: false, tags: ["food", "culture", "shopping"] },
+    { name: "Istanbul", country: "Turkey", flag: "\ud83c\uddf9\ud83c\uddf7", file: null, live: false, tags: ["food", "culture"] },
+    { name: "Barcelona", country: "Spain", flag: "\ud83c\uddea\ud83c\uddf8", file: null, live: false, tags: ["food", "culture", "nightlife", "nature"] },
+    { name: "Rome", country: "Italy", flag: "\ud83c\uddee\ud83c\uddf9", file: null, live: false, tags: ["food", "culture"] },
+    { name: "Amsterdam", country: "Netherlands", flag: "\ud83c\uddf3\ud83c\uddf1", file: null, live: false, tags: ["culture", "nightlife", "nature"] },
+    { name: "Prague", country: "Czech Republic", flag: "\ud83c\udde8\ud83c\uddff", file: null, live: false, tags: ["culture", "nightlife"] },
+    { name: "Lisbon", country: "Portugal", flag: "\ud83c\uddf5\ud83c\uddf9", file: null, live: false, tags: ["food", "culture", "nightlife", "nature"] },
+    { name: "Bali", country: "Indonesia", flag: "\ud83c\uddee\ud83c\udde9", file: null, live: false, tags: ["nature", "culture", "food"] },
+    { name: "Sydney", country: "Australia", flag: "\ud83c\udde6\ud83c\uddfa", file: null, live: false, tags: ["nature", "food", "culture"] },
+    { name: "Mexico City", country: "Mexico", flag: "\ud83c\uddf2\ud83c\uddfd", file: null, live: false, tags: ["food", "culture", "nightlife"] },
+    { name: "Marrakech", country: "Morocco", flag: "\ud83c\uddf2\ud83c\udde6", file: null, live: false, tags: ["food", "culture", "shopping"] },
+    { name: "Kyoto", country: "Japan", flag: "\ud83c\uddef\ud83c\uddf5", file: null, live: false, tags: ["culture", "nature", "food"] },
+    { name: "Reykjavik", country: "Iceland", flag: "\ud83c\uddee\ud83c\uddf8", file: null, live: false, tags: ["nature", "culture"] },
+    { name: "Cape Town", country: "South Africa", flag: "\ud83c\uddff\ud83c\udde6", file: null, live: false, tags: ["nature", "food", "culture"] }
+];
+
+function renderCities(filter) {
+    const grid = document.getElementById('city-grid');
+    const f = (filter || '').toLowerCase();
+    const list = f ? cities.filter(c => c.name.toLowerCase().includes(f) || c.country.toLowerCase().includes(f) || c.tags.some(t => t.includes(f))) : cities;
+    grid.innerHTML = list.map(c => {
+        const tags = c.tags.map(t => '<span class="city-tag ' + t + '">' + t + '</span>').join('');
+        const badge = c.live ? '<span class="badge live">LIVE</span>' : '<span class="badge soon">COMING SOON</span>';
+        if (c.live && c.file) {
+            return '<a href="' + c.file + '" class="city-card">' + badge + '<div class="city-flag">' + c.flag + '</div><div class="city-name">' + c.name + '</div><div class="city-country">' + c.country + '</div><div class="city-tags">' + tags + '</div></a>';
+        }
+        return '<div class="city-card coming-soon">' + badge + '<div class="city-flag">' + c.flag + '</div><div class="city-name">' + c.name + '</div><div class="city-country">' + c.country + '</div><div class="city-tags">' + tags + '</div></div>';
+    }).join('');
+}
+function filterCities() { renderCities(document.getElementById('search').value); }
+renderCities();
+</script>
+</body>
+</html>
