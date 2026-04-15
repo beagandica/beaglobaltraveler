@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ beaglobaltraveler | Amsterdam Travel Guide</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '✈️';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -30px;
+            right: -20px;
+            transform: rotate(-15deg);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+        .hero .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero .stat { text-align: center; }
+        .hero .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .hero .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            background: #161822;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #2a2d3a;
+        }
+        .nav button {
+            padding: 10px 24px;
+            border: 1px solid #2a2d3a;
+            border-radius: 24px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .nav button:hover { border-color: #60a5fa; color: #60a5fa; }
+        .nav button.active {
+            background: #60a5fa;
+            color: #0f1117;
+            border-color: #60a5fa;
+            font-weight: 600;
+        }
+        .section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section.active { display: block; }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            border: 1px solid #2a2d3a;
+        }
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .map-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid #2a2d3a;
+            border-radius: 20px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(96, 165, 250, 0.1);
+        }
+        .card-emoji { font-size: 2rem; margin-bottom: 12px; }
+        .card-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .card-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .card-tag {
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #2a2d3a;
+            color: #94a3b8;
+        }
+        .card-tag.food { background: #422006; color: #fbbf24; }
+        .card-tag.culture { background: #1e3a5f; color: #60a5fa; }
+        .card-tag.nightlife { background: #4a0e0e; color: #f87171; }
+        .card-tag.nature { background: #052e16; color: #4ade80; }
+        .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
+        .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
+        .card-tag.budget-high { background: #7f1d1d; color: #fca5a5; }
+        .card-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .card-must-order {
+            font-size: 0.85rem;
+            color: #60a5fa;
+            font-style: italic;
+        }
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa);
+            border-radius: 3px;
+        }
+        .timeline-day { margin-bottom: 40px; }
+        .timeline-day-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 60px;
+            color: #60a5fa;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-left: 21px;
+            z-index: 1;
+            border: 3px solid #0f1117;
+        }
+        .timeline-dot.morning { background: #fbbf24; }
+        .timeline-dot.afternoon { background: #60a5fa; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
+        .timeline-content {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .timeline-place {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+        .timeline-detail {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .timeline-transit {
+            font-size: 0.8rem;
+            color: #60a5fa;
+            margin-top: 8px;
+        }
+        .phrases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+            margin: 24px auto 0;
+        }
+        .phrase-card {
+            background: #1a1d2e;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .phrase-native {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+        .phrase-romanized {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .phrase-english {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        .footer span { color: #60a5fa; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero .stats { gap: 20px; }
+            .cards { grid-template-columns: 1fr; }
+            .nav { overflow-x: auto; justify-content: flex-start; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>✈️ beaglobaltraveler | Amsterdam</h1>
+    <p class="subtitle">Your AI travel companion's guide to canals, bikes, and Dutch charm</p>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Neighborhoods</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Restaurants</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">10</div>
+            <div class="stat-label">Landmarks</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Nightlife</div>
+        </div>
+    </div>
+</div>
+
+<div class="nav">
+    <button class="active" onclick="showSection('map')">&#x1F5FA;&#xFE0F; Map</button>
+    <button onclick="showSection('food')">&#x1F35C; Food</button>
+    <button onclick="showSection('landmarks')">&#x1F3DB;&#xFE0F; Landmarks</button>
+    <button onclick="showSection('nightlife')">&#x1F319; Nightlife</button>
+    <button onclick="showSection('itinerary')">&#x1F4C5; Itinerary</button>
+    <button onclick="showSection('phrases')">&#x1F4AC; Phrases</button>
+</div>
+
+<div id="sec-map" class="section active">
+    <h2 class="section-title">&#x1F5FA;&#xFE0F; Explore Amsterdam</h2>
+    <div id="map"></div>
+    <div class="map-legend">
+        <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
+        <span><span class="legend-dot" style="background:#60a5fa"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#4ade80"></span> Nature / Views</span>
+    </div>
+</div>
+
+<div id="sec-food" class="section">
+    <h2 class="section-title">&#x1F35C; Where to Eat</h2>
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterCards('food', 'all', this)">All</button>
+        <button class="filter-btn" onclick="filterCards('food', '$', this)">$ Budget</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$', this)">$$ Mid</button>
+        <button class="filter-btn" onclick="filterCards('food', '$$$', this)">$$$ Splurge</button>
+    </div>
+    <div class="cards" id="food-cards"></div>
+</div>
+
+<div id="sec-landmarks" class="section">
+    <h2 class="section-title">&#x1F3DB;&#xFE0F; Things to Do</h2>
+    <div class="cards" id="landmark-cards"></div>
+</div>
+
+<div id="sec-nightlife" class="section">
+    <h2 class="section-title">&#x1F319; After Dark</h2>
+    <div class="cards" id="nightlife-cards"></div>
+</div>
+
+<div id="sec-itinerary" class="section">
+    <h2 class="section-title">&#x1F4C5; 2-Day Amsterdam Itinerary</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by beaglobaltraveler &#x2708;&#xFE0F; , foodie + culture vibe</p>
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div id="sec-phrases" class="section">
+    <h2 class="section-title">&#x1F4AC; Survival Dutch</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:8px;">The phrases that'll make locals smile</p>
+    <div class="phrases-grid" id="phrases-grid"></div>
+</div>
+
+<div class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with &#x2764;&#xFE0F; for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> &middot;
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> &middot;
+    <a href="index.html" style="color:#60a5fa">All Cities</a><br>
+    <small>&copy; 2026 beaglobaltraveler</small>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const foodData = [
+    {
+        "name": "Foodhallen",
+        "cat": "Food hall",
+        "hood": "Oud-West",
+        "budget": "$$",
+        "desc": "Amsterdam's indoor street food market in a former tram depot. Over 20 stalls, from bao buns to bitterballen.",
+        "mustOrder": "Bitterballen, banh mi, craft beer",
+        "lat": 52.3645,
+        "lng": 4.8663,
+        "emoji": "🍜"
+    },
+    {
+        "name": "Albert Cuyp Market",
+        "cat": "Street market",
+        "hood": "De Pijp",
+        "budget": "$",
+        "desc": "The largest outdoor market in Amsterdam. Stroopwafels made fresh, herring stands, Surinamese roti.",
+        "mustOrder": "Fresh stroopwafel, raw herring, Surinamese roti",
+        "lat": 52.3553,
+        "lng": 4.8925,
+        "emoji": "🧇"
+    },
+    {
+        "name": "The Pancake Bakery",
+        "cat": "Dutch",
+        "hood": "Jordaan",
+        "budget": "$$",
+        "desc": "Pancakes the size of manhole covers in a 17th-century canal warehouse. Every topping imaginable.",
+        "mustOrder": "Bacon and cheese pancake, apple cinnamon pancake",
+        "lat": 52.3745,
+        "lng": 4.8837,
+        "emoji": "🥞"
+    },
+    {
+        "name": "Winkel 43",
+        "cat": "Cafe",
+        "hood": "Jordaan",
+        "budget": "$",
+        "desc": "The apple pie here is legendary. Thick, chunky, served warm with whipped cream. Go on Noordermarkt Saturday.",
+        "mustOrder": "Apple pie with whipped cream",
+        "lat": 52.3754,
+        "lng": 4.8799,
+        "emoji": "🍰"
+    },
+    {
+        "name": "Rijsel",
+        "cat": "French-Belgian",
+        "hood": "Oost",
+        "budget": "$$",
+        "desc": "No menu, just a daily-changing set meal. The fried chicken nights are cult favorites. Book ahead.",
+        "mustOrder": "Fried chicken, frites, daily set menu",
+        "lat": 52.3608,
+        "lng": 4.934,
+        "emoji": "🍗"
+    },
+    {
+        "name": "Pluk",
+        "cat": "Cafe/brunch",
+        "hood": "Centrum",
+        "budget": "$$",
+        "desc": "Pretty-in-pink brunch spot with acai bowls, avocado toast, and fresh juices. Instagram-ready but good.",
+        "mustOrder": "Acai bowl, avocado toast, matcha latte",
+        "lat": 52.368,
+        "lng": 4.883,
+        "emoji": "🥑"
+    },
+    {
+        "name": "Moeders",
+        "cat": "Dutch",
+        "hood": "Jordaan",
+        "budget": "$$",
+        "desc": "\"Mothers\" restaurant with home-style Dutch food and walls covered in photos of everyone's mom.",
+        "mustOrder": "Stamppot, hutspot, Dutch pea soup",
+        "lat": 52.377,
+        "lng": 4.881,
+        "emoji": "🍲"
+    },
+    {
+        "name": "Van Stapele Koekmakerij",
+        "cat": "Bakery",
+        "hood": "Centrum",
+        "budget": "$",
+        "desc": "One product: a dark chocolate cookie with white chocolate center, served warm. Always a line.",
+        "mustOrder": "Chocolate cookie (the only item)",
+        "lat": 52.371,
+        "lng": 4.889,
+        "emoji": "🍪"
+    },
+    {
+        "name": "Bar Spek",
+        "cat": "Brunch",
+        "hood": "De Pijp",
+        "budget": "$$",
+        "desc": "Excellent all-day brunch in the heart of De Pijp. Eggs every way, strong coffee, relaxed vibe.",
+        "mustOrder": "Eggs royale, French toast, flat white",
+        "lat": 52.3555,
+        "lng": 4.8935,
+        "emoji": "🍳"
+    },
+    {
+        "name": "Ciel Bleu",
+        "cat": "Fine dining",
+        "hood": "De Pijp",
+        "budget": "$$$",
+        "desc": "Two Michelin stars on the 23rd floor of Hotel Okura. French-Japanese fusion with city views.",
+        "mustOrder": "Tasting menu with wine pairing",
+        "lat": 52.351,
+        "lng": 4.8943,
+        "emoji": "⭐"
+    }
+];
+
+const landmarkData = [
+    {
+        "name": "Anne Frank House",
+        "cat": "History",
+        "hood": "Jordaan",
+        "budget": "$$",
+        "time": "1.5 hours",
+        "desc": "The actual hiding place. Deeply moving, incredibly well-preserved. Book timed tickets 6 weeks ahead.",
+        "lat": 52.3752,
+        "lng": 4.884,
+        "emoji": "📖"
+    },
+    {
+        "name": "Rijksmuseum",
+        "cat": "Art",
+        "hood": "Museumplein",
+        "budget": "$$",
+        "time": "3-4 hours",
+        "desc": "Rembrandt's Night Watch, Vermeer's Milkmaid, and thousands more. The building itself is a masterpiece.",
+        "lat": 52.36,
+        "lng": 4.8852,
+        "emoji": "🎨"
+    },
+    {
+        "name": "Van Gogh Museum",
+        "cat": "Art",
+        "hood": "Museumplein",
+        "budget": "$$",
+        "time": "2-3 hours",
+        "desc": "The world's largest Van Gogh collection. Chronological journey through his life. Book timed entry.",
+        "lat": 52.3584,
+        "lng": 4.8811,
+        "emoji": "🌻"
+    },
+    {
+        "name": "Canal Cruise",
+        "cat": "Scenic",
+        "hood": "Central",
+        "budget": "$$",
+        "time": "1 hour",
+        "desc": "See the city from the water. Evening cruises with wine are romantic. Open boats are best in good weather.",
+        "lat": 52.3702,
+        "lng": 4.8952,
+        "emoji": "⛵"
+    },
+    {
+        "name": "Vondelpark",
+        "cat": "Nature",
+        "hood": "Oud-Zuid",
+        "budget": "Free",
+        "time": "1-2 hours",
+        "desc": "Amsterdam's Central Park. Locals picnic, jog, and sit at the cafe terraces. Free summer concerts.",
+        "lat": 52.3579,
+        "lng": 4.8686,
+        "emoji": "🌳"
+    },
+    {
+        "name": "Jordaan Canal Walk",
+        "cat": "Walk",
+        "hood": "Jordaan",
+        "budget": "Free",
+        "time": "2 hours",
+        "desc": "The most photogenic canals in the city. Prinsengracht, Keizersgracht, Herengracht. Golden hour is magical.",
+        "lat": 52.375,
+        "lng": 4.883,
+        "emoji": "🌉"
+    },
+    {
+        "name": "NDSM Wharf",
+        "cat": "Culture",
+        "hood": "Noord",
+        "budget": "Free",
+        "time": "2-3 hours",
+        "desc": "Former shipyard turned creative village. Giant street art, festivals, IJ Brewery.",
+        "lat": 52.401,
+        "lng": 4.8915,
+        "emoji": "🎨"
+    },
+    {
+        "name": "Heineken Experience",
+        "cat": "Culture",
+        "hood": "De Pijp",
+        "budget": "$$",
+        "time": "1.5 hours",
+        "desc": "Interactive tour of the original Heineken brewery. Ends with beer tasting. More fun than you'd expect.",
+        "lat": 52.3571,
+        "lng": 4.8919,
+        "emoji": "🍺"
+    },
+    {
+        "name": "A'DAM Lookout and Swing",
+        "cat": "Views",
+        "hood": "Noord",
+        "budget": "$$",
+        "time": "1 hour",
+        "desc": "Panoramic views from the tower across the IJ river. The rooftop swing over the edge is for the brave.",
+        "lat": 52.384,
+        "lng": 4.9003,
+        "emoji": "🎡"
+    },
+    {
+        "name": "Begijnhof",
+        "cat": "History",
+        "hood": "Centrum",
+        "budget": "Free",
+        "time": "30 min",
+        "desc": "A hidden courtyard of medieval houses in the city center. One of Amsterdam's secret peaceful spots.",
+        "lat": 52.3696,
+        "lng": 4.8899,
+        "emoji": "🏡"
+    }
+];
+
+const nightlifeData = [
+    {
+        "name": "Leidseplein Area",
+        "cat": "Bars/clubs",
+        "hood": "Centrum",
+        "budget": "$$-$$$",
+        "desc": "Amsterdam's main nightlife square. Clubs, comedy shows, and live music venues clustered together.",
+        "lat": 52.3638,
+        "lng": 4.8827,
+        "emoji": "🌟"
+    },
+    {
+        "name": "Paradiso",
+        "cat": "Live music/club",
+        "hood": "Leidseplein",
+        "budget": "$$",
+        "desc": "A former church turned legendary music venue. Incredible acoustics, eclectic bookings.",
+        "lat": 52.3622,
+        "lng": 4.8836,
+        "emoji": "🎵"
+    },
+    {
+        "name": "Brouwerij 't IJ",
+        "cat": "Brewery",
+        "hood": "Oost",
+        "budget": "$$",
+        "desc": "Craft brewery in a windmill. Sit on the terrace, drink local IPAs, and watch the sun go down.",
+        "lat": 52.3667,
+        "lng": 4.9264,
+        "emoji": "🍺"
+    },
+    {
+        "name": "Cafe de Dokter",
+        "cat": "Brown cafe",
+        "hood": "Centrum",
+        "budget": "$$",
+        "desc": "Amsterdam's smallest bar, open since 1798. Barely fits 12 people. Jenever is the order.",
+        "lat": 52.371,
+        "lng": 4.891,
+        "emoji": "🥃"
+    },
+    {
+        "name": "Shelter",
+        "cat": "Club",
+        "hood": "Noord",
+        "budget": "$$",
+        "desc": "Underground techno club beneath the A'DAM Tower. Serious music, serious sound system, open until morning.",
+        "lat": 52.384,
+        "lng": 4.9005,
+        "emoji": "🎶"
+    }
+];
+
+const phrasesData = [
+    {
+        "local": "Hallo",
+        "roman": "HAH-loh",
+        "english": "Hello"
+    },
+    {
+        "local": "Dank je wel",
+        "roman": "DAHNK yuh VEL",
+        "english": "Thank you"
+    },
+    {
+        "local": "Alsjeblieft",
+        "roman": "AHL-shuh-bleeft",
+        "english": "Please"
+    },
+    {
+        "local": "Proost!",
+        "roman": "PROHST",
+        "english": "Cheers!"
+    },
+    {
+        "local": "De rekening, alsjeblieft",
+        "roman": "duh RAY-kuh-ning AHL-shuh-bleeft",
+        "english": "The bill please"
+    },
+    {
+        "local": "Lekker!",
+        "roman": "LEK-ker",
+        "english": "Delicious!"
+    },
+    {
+        "local": "Waar is...?",
+        "roman": "vahr is",
+        "english": "Where is...?"
+    },
+    {
+        "local": "Doei!",
+        "roman": "DOO-ee",
+        "english": "Goodbye"
+    }
+];
+
+const itineraryData = [
+    {
+        "day": "Day 1: Museums, Canals & Jordaan",
+        "items": [
+            {
+                "time": "9:00 AM",
+                "period": "food-stop",
+                "place": "🍪 Van Stapele cookie",
+                "detail": "Start with a warm chocolate cookie. One product, perfected. The white chocolate center melts instantly.",
+                "transit": "🚶 Near Spui, walk from Centraal",
+                "emoji": "🍪"
+            },
+            {
+                "time": "9:30 AM",
+                "period": "morning",
+                "place": "Anne Frank House",
+                "detail": "Book exactly 6 weeks ahead. The hiding place is deeply moving and perfectly preserved.",
+                "transit": "🚶 10 min walk to Prinsengracht",
+                "emoji": "📖"
+            },
+            {
+                "time": "12:00 PM",
+                "period": "morning",
+                "place": "Jordaan Canal Walk",
+                "detail": "Wander Prinsengracht, Keizersgracht, and Herengracht. The most photogenic canals in the city.",
+                "transit": "🚶 Walk south through Jordaan",
+                "emoji": "🌉"
+            },
+            {
+                "time": "1:00 PM",
+                "period": "food-stop",
+                "place": "🍜 Lunch: Winkel 43",
+                "detail": "The legendary apple pie, thick and warm with whipped cream. Pair it with a strong coffee.",
+                "transit": "🚶 Walk to Noordermarkt",
+                "emoji": "🍰"
+            },
+            {
+                "time": "2:30 PM",
+                "period": "afternoon",
+                "place": "Rijksmuseum",
+                "detail": "Rembrandt's Night Watch is the headliner. Allow 3 hours minimum. The building itself is art.",
+                "transit": "🚊 Tram 2/5 to Museumplein",
+                "emoji": "🎨"
+            },
+            {
+                "time": "5:30 PM",
+                "period": "afternoon",
+                "place": "Van Gogh Museum",
+                "detail": "The world's largest Van Gogh collection. A chronological journey from early dark works to Starry Night.",
+                "transit": "🚶 5 min walk across Museumplein",
+                "emoji": "🌻"
+            },
+            {
+                "time": "7:30 PM",
+                "period": "evening",
+                "place": "Canal Cruise",
+                "detail": "See Amsterdam from the water at golden hour. Wine cruise or open boat, both magical.",
+                "transit": "🚶 Walk to embarkation near Centraal",
+                "emoji": "⛵"
+            },
+            {
+                "time": "9:00 PM",
+                "period": "food-stop",
+                "place": "🍝 Dinner: Moeders",
+                "detail": "Home-style Dutch food with walls covered in mom photos. Stamppot and hutspot are comfort food perfection.",
+                "transit": "🚶 Walk to Jordaan",
+                "emoji": "🍲"
+            },
+            {
+                "time": "10:30 PM",
+                "period": "evening",
+                "place": "Leidseplein nightlife",
+                "detail": "Amsterdam's main nightlife square. Pick a bar, grab a terrace seat, or hit Paradiso for live music.",
+                "transit": "🚊 Tram 1/2/5 to Leidseplein",
+                "emoji": "🌟"
+            }
+        ]
+    },
+    {
+        "day": "Day 2: Local Amsterdam & Noord",
+        "items": [
+            {
+                "time": "9:30 AM",
+                "period": "morning",
+                "place": "Albert Cuyp Market",
+                "detail": "Amsterdam's biggest outdoor market. Fresh stroopwafels from the press, raw herring, Surinamese roti.",
+                "transit": "🚊 Tram 16/24 to Albert Cuypstraat",
+                "emoji": "🧇"
+            },
+            {
+                "time": "11:00 AM",
+                "period": "food-stop",
+                "place": "🍳 Brunch: Bar Spek",
+                "detail": "All-day brunch in De Pijp. Eggs royale and French toast with strong flat whites.",
+                "transit": "🚶 5 min walk in De Pijp",
+                "emoji": "🍳"
+            },
+            {
+                "time": "12:30 PM",
+                "period": "afternoon",
+                "place": "Heineken Experience",
+                "detail": "Interactive brewery tour that's more fun than expected. Ends with beer tasting and a souvenir glass.",
+                "transit": "🚶 10 min walk from De Pijp",
+                "emoji": "🍺"
+            },
+            {
+                "time": "2:30 PM",
+                "period": "afternoon",
+                "place": "Ferry to NDSM Wharf",
+                "detail": "Free ferry from behind Centraal. Former shipyard with giant street art, creative spaces, and a brewery.",
+                "transit": "⛴️ Free ferry from Centraal Station",
+                "emoji": "🎨"
+            },
+            {
+                "time": "4:30 PM",
+                "period": "afternoon",
+                "place": "A'DAM Lookout and Swing",
+                "detail": "Panoramic views from the tower. Brave the rooftop swing that hangs over the edge, 100 meters up.",
+                "transit": "⛴️ Ferry back to ADAM tower pier",
+                "emoji": "🎡"
+            },
+            {
+                "time": "6:00 PM",
+                "period": "food-stop",
+                "place": "🍜 Dinner: Foodhallen",
+                "detail": "Indoor food market in a tram depot. 20+ stalls. Bitterballen, banh mi, and craft beer. Something for everyone.",
+                "transit": "🚊 Tram to Oud-West",
+                "emoji": "🍜"
+            },
+            {
+                "time": "8:00 PM",
+                "period": "evening",
+                "place": "Vondelpark stroll",
+                "detail": "Amsterdam's green heart at dusk. Grab a beer at the Blauwe Theehuis and enjoy the park vibe.",
+                "transit": "🚶 10 min walk from Foodhallen",
+                "emoji": "🌳"
+            },
+            {
+                "time": "9:30 PM",
+                "period": "evening",
+                "place": "Brouwerij 't IJ",
+                "detail": "End the trip at a craft brewery in a windmill. Sit on the terrace with a local IPA as the sun sets.",
+                "transit": "🚊 Tram 7/14 to Oost",
+                "emoji": "🍺"
+            }
+        ]
+    }
+];
+
+const map = L.map('map', { scrollWheelZoom: true }).setView([52.3676, 4.9041], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+}).addTo(map);
+
+function addMarkers(data, color) {
+    data.forEach(item => {
+        if (!item.lat) return;
+        const icon = L.divIcon({
+            html: '<div style="background:' + color + ';width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0f1117;box-shadow:0 2px 8px rgba(0,0,0,0.4)">' + item.emoji + '</div>',
+            iconSize: [28, 28],
+            className: ''
+        });
+        L.marker([item.lat, item.lng], { icon })
+            .bindPopup(
+                '<div style="font-family:Segoe UI,sans-serif;min-width:200px">' +
+                '<b style="font-size:14px">' + item.emoji + ' ' + item.name + '</b><br>' +
+                '<span style="color:#666;font-size:12px">' + item.cat + ' &middot; ' + item.hood + ' &middot; ' + item.budget + '</span><br>' +
+                '<p style="margin:6px 0;font-size:13px">' + item.desc + '</p>' +
+                (item.mustOrder ? '<em style="color:#3b82f6;font-size:12px">Must try: ' + item.mustOrder + '</em>' : '') +
+                (item.time ? '<span style="color:#888;font-size:12px">&clock; ' + item.time + '</span>' : '') +
+                '</div>'
+            )
+            .addTo(map);
+    });
+}
+
+addMarkers(foodData, '#fbbf24');
+addMarkers(landmarkData, '#60a5fa');
+addMarkers(nightlifeData, '#ef4444');
+
+function budgetClass(b) {
+    if (b === '$' || b === '$-$$') return 'budget-low';
+    if (b === '$$' || b === '$$-$$$') return 'budget-mid';
+    return 'budget-high';
+}
+
+function catClass(cat) {
+    var c = cat.toLowerCase();
+    if (c.indexOf('nature') >= 0 || c.indexOf('garden') >= 0 || c.indexOf('trek') >= 0) return 'nature';
+    if (c.indexOf('bar') >= 0 || c.indexOf('club') >= 0 || c.indexOf('night') >= 0 || c.indexOf('speakeasy') >= 0 || c.indexOf('tavern') >= 0 || c.indexOf('brewery') >= 0 || c.indexOf('jazz') >= 0 || c.indexOf('fado') >= 0 || c.indexOf('rooftop') >= 0 || c.indexOf('live music') >= 0 || c.indexOf('beach club') >= 0) return 'nightlife';
+    if (c.indexOf('culture') >= 0 || c.indexOf('museum') >= 0 || c.indexOf('history') >= 0 || c.indexOf('historic') >= 0 || c.indexOf('architecture') >= 0 || c.indexOf('walk') >= 0 || c.indexOf('scenic') >= 0 || c.indexOf('views') >= 0 || c.indexOf('view') >= 0 || c.indexOf('art') >= 0 || c.indexOf('iconic') >= 0 || c.indexOf('shopping') >= 0 || c.indexOf('experience') >= 0 || c.indexOf('sport') >= 0 || c.indexOf('day trip') >= 0 || c.indexOf('adventure') >= 0 || c.indexOf('beach') >= 0) return 'culture';
+    return 'food';
+}
+
+function renderCards(containerId, data, showMustOrder, showTime) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = data.map(function(item) {
+        return '<div class="card" data-budget="' + item.budget + '">' +
+            '<div class="card-emoji">' + item.emoji + '</div>' +
+            '<div class="card-name">' + item.name + '</div>' +
+            '<div class="card-meta">' +
+                '<span class="card-tag ' + catClass(item.cat) + '">' + item.cat + '</span>' +
+                '<span class="card-tag">' + item.hood + '</span>' +
+                '<span class="card-tag ' + budgetClass(item.budget) + '">' + item.budget + '</span>' +
+                (showTime && item.time ? '<span class="card-tag">&clock; ' + item.time + '</span>' : '') +
+            '</div>' +
+            '<div class="card-desc">' + item.desc + '</div>' +
+            (showMustOrder && item.mustOrder ? '<div class="card-must-order">&#x1F525; Must try: ' + item.mustOrder + '</div>' : '') +
+        '</div>';
+    }).join('');
+}
+
+renderCards('food-cards', foodData, true, false);
+renderCards('landmark-cards', landmarkData, false, true);
+renderCards('nightlife-cards', nightlifeData, false, false);
+
+function filterCards(section, budget, btn) {
+    var container = document.getElementById(section + '-cards');
+    var cards = container.querySelectorAll('.card');
+    cards.forEach(function(card) {
+        if (budget === 'all' || card.dataset.budget === budget) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+}
+
+function renderTimeline() {
+    var container = document.getElementById('timeline');
+    container.innerHTML = itineraryData.map(function(day) {
+        return '<div class="timeline-day">' +
+            '<div class="timeline-day-header">' + day.day + '</div>' +
+            day.items.map(function(item) {
+                return '<div class="timeline-item">' +
+                    '<div class="timeline-dot ' + item.period + '"></div>' +
+                    '<div class="timeline-content">' +
+                        '<div class="timeline-time">' + item.time + '</div>' +
+                        '<div class="timeline-place">' + item.emoji + ' ' + item.place + '</div>' +
+                        '<div class="timeline-detail">' + item.detail + '</div>' +
+                        '<div class="timeline-transit">' + item.transit + '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('') +
+        '</div>';
+    }).join('');
+}
+renderTimeline();
+
+function renderPhrases() {
+    var container = document.getElementById('phrases-grid');
+    container.innerHTML = phrasesData.map(function(p) {
+        return '<div class="phrase-card">' +
+            '<div class="phrase-native">' + p.local + '</div>' +
+            '<div class="phrase-romanized">' + p.roman + '</div>' +
+            '<div class="phrase-english">' + p.english + '</div>' +
+        '</div>';
+    }).join('');
+}
+renderPhrases();
+
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('sec-' + name).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(function(b) { b.classList.remove('active'); });
+    event.target.classList.add('active');
+    if (name === 'map') {
+        setTimeout(function() { map.invalidateSize(); }, 100);
+    }
+}
+</script>
+</body>
+</html>

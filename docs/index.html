@@ -224,7 +224,7 @@
 
 <footer class="footer">
     Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
-    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener">@beaglobaltraveler</a> · <a href="https://github.com/beagandica/beaglobaltraveler" target="_blank" rel="noopener">GitHub</a><br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener">@beaglobaltraveler</a> · <a href="about.html">About Bea</a> · <a href="https://github.com/beagandica/beaglobaltraveler" target="_blank" rel="noopener">GitHub</a><br>
     <small>&copy; 2026 beaglobaltraveler</small>
 </footer>
 
@@ -290,28 +290,28 @@ document.getElementById('region-grid').innerHTML=regions.map(function(r){
 /* City guide cards */
 var cities=[
     {n:"Seoul",co:"South Korea",f:"kr",u:"seoul-guide.html",live:2,t:["food","culture","nightlife","shopping"]},
-    {n:"Bucheon",co:"South Korea",f:"kr",u:null,live:1,t:["food","culture","nature"]},
-    {n:"Tokyo",co:"Japan",f:"jp",u:null,live:1,t:["food","culture","nightlife","shopping"]},
-    {n:"Paris",co:"France",f:"fr",u:null,live:1,t:["food","culture","shopping"]},
-    {n:"London",co:"United Kingdom",f:"gb",u:null,live:1,t:["culture","nightlife","shopping"]},
-    {n:"New York",co:"United States",f:"us",u:null,live:1,t:["food","culture","nightlife","shopping"]},
-    {n:"Bangkok",co:"Thailand",f:"th",u:null,live:1,t:["food","culture","nightlife"]},
-    {n:"Dubai",co:"UAE",f:"ae",u:null,live:1,t:["shopping","culture"]},
-    {n:"Singapore",co:"Singapore",f:"sg",u:null,live:1,t:["food","culture","shopping"]},
-    {n:"Istanbul",co:"Turkey",f:"tr",u:null,live:1,t:["food","culture"]},
-    {n:"Barcelona",co:"Spain",f:"es",u:null,live:1,t:["food","culture","nightlife","nature"]},
-    {n:"Rome",co:"Italy",f:"it",u:null,live:1,t:["food","culture"]},
-    {n:"Amsterdam",co:"Netherlands",f:"nl",u:null,live:1,t:["culture","nightlife","nature"]},
-    {n:"Prague",co:"Czech Republic",f:"cz",u:null,live:1,t:["culture","nightlife"]},
-    {n:"Lisbon",co:"Portugal",f:"pt",u:null,live:1,t:["food","culture","nightlife","nature"]},
-    {n:"Bali",co:"Indonesia",f:"id",u:null,live:1,t:["nature","culture","food","beach"]},
-    {n:"Sydney",co:"Australia",f:"au",u:null,live:1,t:["nature","food","culture"]},
-    {n:"Mexico City",co:"Mexico",f:"mx",u:null,live:1,t:["food","culture","nightlife"]},
-    {n:"Reykjavik",co:"Iceland",f:"is",u:null,live:1,t:["nature","culture"]},
-    {n:"Bora Bora",co:"French Polynesia",f:"pf",u:null,live:1,t:["nature","beach"]},
-    {n:"Fiji",co:"Fiji",f:"fj",u:null,live:1,t:["nature","beach"]},
-    {n:"Seychelles",co:"Seychelles",f:"sc",u:null,live:1,t:["nature","beach"]},
-    {n:"Mauritius",co:"Mauritius",f:"mu",u:null,live:1,t:["nature","beach"]},
+    {n:"Tokyo",co:"Japan",f:"jp",u:"tokyo-guide.html",live:2,t:["food","culture","nightlife","shopping"]},
+    {n:"Paris",co:"France",f:"fr",u:"paris-guide.html",live:2,t:["food","culture","shopping"]},
+    {n:"London",co:"United Kingdom",f:"gb",u:"london-guide.html",live:2,t:["culture","nightlife","shopping"]},
+    {n:"New York",co:"United States",f:"us",u:"new-york-guide.html",live:2,t:["food","culture","nightlife","shopping"]},
+    {n:"Bangkok",co:"Thailand",f:"th",u:"bangkok-guide.html",live:2,t:["food","culture","nightlife"]},
+    {n:"Dubai",co:"UAE",f:"ae",u:"dubai-guide.html",live:2,t:["shopping","culture"]},
+    {n:"Singapore",co:"Singapore",f:"sg",u:"singapore-guide.html",live:2,t:["food","culture","shopping"]},
+    {n:"Istanbul",co:"Turkey",f:"tr",u:"istanbul-guide.html",live:2,t:["food","culture"]},
+    {n:"Barcelona",co:"Spain",f:"es",u:"barcelona-guide.html",live:2,t:["food","culture","nightlife","nature"]},
+    {n:"Rome",co:"Italy",f:"it",u:"rome-guide.html",live:2,t:["food","culture"]},
+    {n:"Amsterdam",co:"Netherlands",f:"nl",u:"amsterdam-guide.html",live:2,t:["culture","nightlife","nature"]},
+    {n:"Prague",co:"Czech Republic",f:"cz",u:"prague-guide.html",live:2,t:["culture","nightlife"]},
+    {n:"Lisbon",co:"Portugal",f:"pt",u:"lisbon-guide.html",live:2,t:["food","culture","nightlife","nature"]},
+    {n:"Bali",co:"Indonesia",f:"id",u:"bali-guide.html",live:2,t:["nature","culture","food","beach"]},
+    {n:"Sydney",co:"Australia",f:"au",u:"sydney-guide.html",live:2,t:["nature","food","culture"]},
+    {n:"Mexico City",co:"Mexico",f:"mx",u:"mexico-city-guide.html",live:2,t:["food","culture","nightlife"]},
+    {n:"Reykjavik",co:"Iceland",f:"is",u:"reykjavik-guide.html",live:2,t:["nature","culture"]},
+    {n:"Bora Bora",co:"French Polynesia",f:"pf",u:"bora-bora-guide.html",live:2,t:["nature","beach"]},
+    {n:"Fiji",co:"Fiji",f:"fj",u:"fiji-guide.html",live:2,t:["nature","beach"]},
+    {n:"Seychelles",co:"Seychelles",f:"sc",u:"seychelles-guide.html",live:2,t:["nature","beach"]},
+    {n:"Mauritius",co:"Mauritius",f:"mu",u:"mauritius-guide.html",live:2,t:["nature","beach"]},
+    {n:"Bucheon",co:"South Korea",f:"kr",u:"bucheon-guide.html",live:2,t:["food","culture","nature"]},
     {n:"Marrakech",co:"Morocco",f:"ma",u:null,live:0,t:["food","culture","shopping"]},
     {n:"Kyoto",co:"Japan",f:"jp",u:null,live:0,t:["culture","nature","food"]},
     {n:"Cape Town",co:"South Africa",f:"za",u:null,live:0,t:["nature","food","culture"]}
