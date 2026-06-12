@@ -14,7 +14,7 @@ An AI-powered travel planner built with GitHub Copilot customization: custom age
 | Instructions | `.github/instructions/` | Path-specific rules for markdown and Python files |
 | Prompts | `.github/prompts/` | `/plan-my-day` and `/discover-city` reusable commands |
 | App | `src/` | Python CLI for exploring cities |
-| Visualization | `docs/seoul-guide.html` | Interactive dark-mode travel guide with map, cards, and timeline |
+| Visualization | `docs/seoul-guide.html`, `docs/bali-guide.html`, ... | Interactive dark-mode travel guides with maps, cards, and itineraries |
 
 ## Quick start
 
@@ -50,7 +50,7 @@ Or ask @wanderly: *"Tell me about Lisbon"*, it will auto-generate and cache the 
 
 ## Visualization
 
-Open `docs/seoul-guide.html` in a browser for an interactive guide with:
+Open any guide in `docs/` (for example `docs/seoul-guide.html` or `docs/bali-guide.html`) in a browser for an interactive guide with:
 - 🗺️ Map with pins for every recommendation
 - 🍜 Food cards with budget filters
 - 🏛️ Landmark cards with time estimates
