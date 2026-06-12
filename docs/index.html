@@ -19,7 +19,7 @@
 
     <!-- Social preview / Open Graph -->
     <meta property="og:title" content="beaglobaltraveler: Travel the World with Bea">
-    <meta property="og:description" content="74 countries, 48 US states, 7 continents. Curated city guides with interactive maps, local food picks, and day-by-day itineraries from someone who has actually been there.">
+    <meta property="og:description" content="76 countries, 48 US states, 7 continents. Curated city guides with interactive maps, local food picks, and day-by-day itineraries from someone who has actually been there.">
     <meta property="og:image" content="https://beagandica.github.io/beaglobaltraveler/bea-profile.jpg">
     <meta property="og:url" content="https://beagandica.github.io/beaglobaltraveler/">
     <meta property="og:type" content="website">
@@ -28,11 +28,11 @@
     <!-- Twitter/X card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="beaglobaltraveler: Travel the World with Bea">
-    <meta name="twitter:description" content="74 countries, 48 US states, 7 continents. Curated city guides with interactive maps and local recommendations.">
+    <meta name="twitter:description" content="76 countries, 48 US states, 7 continents. Curated city guides with interactive maps and local recommendations.">
     <meta name="twitter:image" content="https://beagandica.github.io/beaglobaltraveler/bea-profile.jpg">
 
     <!-- General meta -->
-    <meta name="description" content="Curated city guides with interactive maps, local food picks, neighborhood walks, and day-by-day itineraries. Built by Beatris Mendez Gandica, 74 countries and counting.">
+    <meta name="description" content="Curated city guides with interactive maps, local food picks, neighborhood walks, and day-by-day itineraries. Built by Beatris Mendez Gandica, 76 countries and counting.">
     <meta name="author" content="Beatris Mendez Gandica">
     <meta name="keywords" content="travel, city guides, beaglobaltraveler, Seoul, Tokyo, Paris, food, itinerary, interactive maps">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -177,9 +177,9 @@
         <div class="hero-text">
             <h1>beaglobaltraveler</h1>
             <p class="subtitle">Travel the world with Bea</p>
-            <p class="tagline">Venezuelan-born, tech-powered, 74 countries and counting. Curated city guides from someone who's actually been there.</p>
+            <p class="tagline">Venezuelan-born, tech-powered, 76 countries and counting. Curated city guides from someone who's actually been there.</p>
             <div class="stats-bar">
-                <div class="stat"><div class="stat-num" data-target="74">0</div><div class="stat-label">Countries</div></div>
+                <div class="stat"><div class="stat-num" data-target="76">0</div><div class="stat-label">Countries</div></div>
                 <div class="stat"><div class="stat-num" data-target="48">0</div><div class="stat-label">of 50 US States</div></div>
                 <div class="stat"><div class="stat-num" data-target="7">0</div><div class="stat-label">Continents</div></div>
                 <div class="stat"><div class="stat-num" data-target="10">0</div><div class="stat-label">Regions</div></div>
@@ -197,7 +197,7 @@
 <section class="reveal">
     <div class="section-header">
         <h2>Where Bea has been 🌍</h2>
-        <p>74 countries across 8 regions, from Caracas to Kyoto</p>
+        <p>76 countries across 8 regions, from Caracas to Kyoto</p>
     </div>
     <div class="region-grid" id="region-grid"></div>
 </section>
@@ -258,7 +258,7 @@ var R={
 "Middle East":{c:"#eab308",p:[["Turkey",39.9,32.9],["UAE",23.4,53.8],["Israel",31,34.9],["Palestine",31.9,35.2],["Syria",35,38.5],["Qatar",25.3,51.2]]},
 "Africa":{c:"#ef4444",p:[["Morocco",31.8,-7.1],["Seychelles",-4.7,55.5],["Kenya",0,37.9],["Tanzania",-6.4,34.9],["Madagascar",-18.8,46.9],["Mauritius",-20.3,57.6]]},
 "Oceania":{c:"#60a5fa",p:[["Australia",-25.3,133.8],["New Zealand",-40.9,174.9],["Fiji",-18,179],["French Polynesia",-17.7,-149.4]]},
-"Asia":{c:"#4ade80",p:[["China",35.9,104.2],["India",20.6,79],["Vietnam",14.1,108.3],["Cambodia",12.6,104.9],["Laos",19.9,102.5],["Thailand",15.9,100.9],["Malaysia",4.2,101.9],["Singapore",1.4,103.8],["Japan",36.2,138.3],["Maldives",3.2,73.2]]}
+"Asia":{c:"#4ade80",p:[["China",35.9,104.2],["India",20.6,79],["Vietnam",14.1,108.3],["Cambodia",12.6,104.9],["Laos",19.9,102.5],["Thailand",15.9,100.9],["Malaysia",4.2,101.9],["Singapore",1.4,103.8],["Japan",36.2,138.3],["South Korea",36.5,127.8],["Indonesia",-2.5,118],["Maldives",3.2,73.2]]}
 };
 
 /* Initialize Leaflet map */
@@ -295,7 +295,7 @@ var regions=[
     {name:"Middle East",emoji:"\ud83d\udd4c",count:"6 countries",color:"#eab308",flags:"\ud83c\uddf9\ud83c\uddf7\ud83c\udde6\ud83c\uddea\ud83c\uddee\ud83c\uddf1\ud83c\uddf5\ud83c\uddf8\ud83c\uddf8\ud83c\uddfe\ud83c\uddf6\ud83c\udde6"},
     {name:"Africa",emoji:"\ud83e\udd81",count:"6 countries",color:"#ef4444",flags:"\ud83c\uddf2\ud83c\udde6\ud83c\uddf8\ud83c\udde8\ud83c\uddf0\ud83c\uddea\ud83c\uddf9\ud83c\uddff\ud83c\uddf2\ud83c\uddec\ud83c\uddf2\ud83c\uddfa"},
     {name:"Oceania",emoji:"\ud83c\udfc4",count:"3 + 1 territory",color:"#60a5fa",flags:"\ud83c\udde6\ud83c\uddfa\ud83c\uddf3\ud83c\uddff\ud83c\uddeb\ud83c\uddef\ud83c\uddf5\ud83c\uddeb"},
-    {name:"Asia",emoji:"\ud83c\udfef",count:"10 countries",color:"#4ade80",flags:"\ud83c\udde8\ud83c\uddf3\ud83c\uddee\ud83c\uddf3\ud83c\uddfb\ud83c\uddf3\ud83c\uddf0\ud83c\udded\ud83c\uddf1\ud83c\udde6\ud83c\uddf9\ud83c\udded\ud83c\uddf2\ud83c\uddfe\ud83c\uddf8\ud83c\uddec\ud83c\uddef\ud83c\uddf5\ud83c\uddf2\ud83c\uddfb"}
+    {name:"Asia",emoji:"\ud83c\udfef",count:"12 countries",color:"#4ade80",flags:"\ud83c\udde8\ud83c\uddf3\ud83c\uddee\ud83c\uddf3\ud83c\uddfb\ud83c\uddf3\ud83c\uddf0\ud83c\udded\ud83c\uddf1\ud83c\udde6\ud83c\uddf9\ud83c\udded\ud83c\uddf2\ud83c\uddfe\ud83c\uddf8\ud83c\uddec\ud83c\uddef\ud83c\uddf5\ud83c\uddf0\ud83c\uddf7\ud83c\uddee\ud83c\udde9\ud83c\uddf2\ud83c\uddfb"}
 ];
 
 document.getElementById('region-grid').innerHTML=regions.map(function(r){
