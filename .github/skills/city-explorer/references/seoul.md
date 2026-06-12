@@ -20,6 +20,7 @@ Seoul (서울) is a city where 600-year-old palaces sit next to neon-lit skyscra
 | Itaewon (이태원) | International, diverse | Global food, vintage shops, LGBTQ+ friendly | Line 6, Itaewon Station |
 | Jongno (종로) | Historic, central | Palaces, temples, traditional markets | Line 1, Jongno Station |
 | Yeouido (여의도) | Business, riverside | Cherry blossoms (spring), riverside walks | Line 5, Yeouido Station |
+| Paju (파주) | Border, sobering | DMZ day trips, Joint Security Area, Imjingak Park | UN-cleared tour bus from central Seoul (~1 hr NW) |
 
 ## Food
 
@@ -50,6 +51,10 @@ Seoul (서울) is a city where 600-year-old palaces sit next to neon-lit skyscra
 | Lotte World Tower Observatory | Views | Songpa | $$$ | 1-2 hours | 555 meters high, glass floor sky deck. For the brave ones. |
 | War Memorial of Korea | Museum | Itaewon | Free | 2-3 hours | Powerful, well-done museum. The outdoor exhibits are impressive. |
 | Dongdaemun Design Plaza (DDP) | Architecture | Dongdaemun | Free | 1 hour | Zaha Hadid's alien spaceship building. Night markets outside on weekends. |
+| DMZ / JSA Day Trip (판문점) | History | Paju | $$$ | Full day | Step into the Joint Security Area where North and South Korean soldiers face each other across the line. UN-cleared tour required (book weeks ahead, passport mandatory, dress code enforced — no ripped jeans, no sleeveless tops). |
+| Imjingak Park (임진각) | History | Paju | Free | 1-2 hours | Gateway to the DMZ: Freedom Bridge, the rusted Korean War locomotive, ribbon-tied fences, and the eerie Mangbaedan altar where separated families come on holidays. |
+| Third Infiltration Tunnel (제3땅굴) | History | Paju | $$ | 1 hour | Walk 73m underground into a North Korean invasion tunnel discovered in 1978. Helmets required, no cameras inside. Claustrophobic and unforgettable. |
+| Dora Observatory (도라전망대) | Views | Paju | $ | 30-45 min | Telescopes pointed straight into Kaesong, North Korea. On a clear day you can see the propaganda village and the world's tallest flagpole. |
 
 ## Nightlife
 

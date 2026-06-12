@@ -350,7 +350,7 @@
             <div class="stat-label">Restaurants</div>
         </div>
         <div class="stat">
-            <div class="stat-number">16</div>
+            <div class="stat-number">18</div>
             <div class="stat-label">Landmarks</div>
         </div>
         <div class="stat">
@@ -402,8 +402,8 @@
 </div>
 
 <div id="sec-itinerary" class="section">
-    <h2 class="section-title">&#x1F4C5; 3-Day Bali + Gilis Itinerary</h2>
-    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by beaglobaltraveler &#x2708;&#xFE0F; , foodie + culture vibe, with a Day 3 island escape to Lembongan and the Gilis</p>
+    <h2 class="section-title">&#x1F4C5; Bali + Gili Island Escape Itinerary</h2>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">A 2-day Bali sampler, then a slow 5-7 day island add-on for Lembongan, Penida &amp; the Gilis. Bali is island pace — ferries, fast boats and traffic eat days. Don't rush it.</p>
     <div class="timeline" id="timeline"></div>
 </div>
 
@@ -723,6 +723,28 @@ const landmarkData = [
         "lat": -8.3617,
         "lng": 116.0828,
         "emoji": "🐢"
+    },
+    {
+        "name": "Kelingking Beach",
+        "cat": "Beach",
+        "hood": "Nusa Penida",
+        "budget": "$",
+        "time": "2-4 hours",
+        "desc": "The T-Rex shaped cliff: Bali's most-photographed coastline. The viewpoint is free; the brutal staircase down to the sand takes ~1 hour each way and is not for the faint-hearted.",
+        "lat": -8.7515,
+        "lng": 115.4715,
+        "emoji": "🦖"
+    },
+    {
+        "name": "Gili Meno Turtle Point & Statues",
+        "cat": "Snorkel",
+        "hood": "Gili Islands, Lombok",
+        "budget": "$",
+        "time": "2-3 hours",
+        "desc": "Snorkel off Meno's west side to see green sea turtles up close and the eerie 'Nest' — Jason deCaires Taylor's ring of 48 underwater human statues, slowly being colonized by coral.",
+        "lat": -8.3434,
+        "lng": 116.0518,
+        "emoji": "🐢"
     }
 ];
 
@@ -814,6 +836,11 @@ const phrasesData = [
         "local": "Bagus",
         "roman": "BAH-goos",
         "english": "Beautiful"
+    },
+    {
+        "local": "Suksma",
+        "roman": "SOOK-smah",
+        "english": "Thank you (Balinese — locals love this one)"
     },
     {
         "local": "Tidak, terima kasih",
@@ -970,87 +997,87 @@ const itineraryData = [
         ]
     },
     {
-        "day": "Day 3: Nusa Lembongan & the Gili Escape",
+        "day": "Island Add-on (5-7 days): Lembongan, Penida & the Gilis",
         "items": [
             {
-                "time": "7:30 AM",
+                "time": "Day 1 / AM",
                 "period": "morning",
-                "place": "Fast boat from Sanur",
-                "detail": "Catch the morning fast boat to Nusa Lembongan (30-40 min). Book the day before, sit on the upper deck if it's offered.",
+                "place": "Fast boat: Sanur → Nusa Lembongan",
+                "detail": "Catch the morning fast boat from Sanur (30-40 min). Book the day before. Upper deck if it's offered. Pickup transfers from Seminyak/Ubud need a 90 min buffer.",
                 "transit": "🚤 Sanur Pier",
                 "emoji": "⛵"
             },
             {
-                "time": "9:00 AM",
-                "period": "food-stop",
-                "place": "🥥 Breakfast: Mushroom Bay café",
-                "detail": "Quick fruit bowl and Bali coffee on arrival. Scooter shops are right at the pier — rent for the day.",
+                "time": "Day 1 / arrival",
+                "period": "morning",
+                "place": "Settle in + scooter rental",
+                "detail": "Drop bags at your guesthouse, rent a scooter at the pier (~$8/day), and just exist for a few hours. Lembongan rewards slow.",
                 "transit": "🛵 Pickup at Jungutbatu jetty",
-                "emoji": "🍍"
+                "emoji": "🥥"
             },
             {
-                "time": "10:00 AM",
-                "period": "morning",
-                "place": "Devil's Tear",
-                "detail": "Cliff blowhole on Lembongan's west side. Waves explode through the rocks — go before midday for the best light.",
+                "time": "Day 1 / sunset",
+                "period": "evening",
+                "place": "Devil's Tear + Dream Beach",
+                "detail": "Sunset hit: cliff blowhole waves explode through the rocks, then a swim (carefully — rip currents) at Dream Beach next door. Warung dinner cliffside.",
                 "transit": "🛵 15 min scooter from Jungutbatu",
                 "emoji": "🌊"
             },
             {
-                "time": "11:30 AM",
+                "time": "Day 2 / all day",
                 "period": "morning",
-                "place": "Dream Beach",
-                "detail": "Tiny crescent of white sand right next to Devil's Tear. Strong rip currents — better for sunbathing than swimming.",
-                "transit": "🛵 5 min from Devil's Tear",
-                "emoji": "🏝️"
+                "place": "Nusa Penida day trip",
+                "detail": "Local fast boat to Penida (15 min). Hire a driver for the day ($45-60) to hit Kelingking 🦖, Angel's Billabong, Broken Beach, Atuh. The roads are rough — don't try to scooter it your first time.",
+                "transit": "🚤 Lembongan → Penida + local driver",
+                "emoji": "🦖"
             },
             {
-                "time": "1:00 PM",
-                "period": "food-stop",
-                "place": "🍤 Lunch: cliffside warung",
-                "detail": "Pick anywhere with a Mushroom Bay view — grilled mahi, mie goreng, fresh young coconut. Slow down, you're on island time.",
-                "transit": "🛵 Back toward Mushroom Bay",
-                "emoji": "🥥"
+                "time": "Day 3 / chill day",
+                "period": "morning",
+                "place": "Slow morning + mangrove tour",
+                "detail": "You earned a rest day. Coffee at Mushroom Bay, a guided mangrove kayak or SUP, lunch over the water. Don't try to add a third activity.",
+                "transit": "🚶 Walk + 🛶 boat",
+                "emoji": "🛶"
             },
             {
-                "time": "2:30 PM",
-                "period": "afternoon",
+                "time": "Day 4 / AM",
+                "period": "morning",
                 "place": "Fast boat: Lembongan → Gili Trawangan",
-                "detail": "Direct fast boats run a couple times a day (1.5-2 hrs). Buy the through ticket at the pier in the morning so you don't get stuck.",
+                "detail": "Direct fast boats run a couple times a day (1.5-2 hrs, often choppy). Buy the through ticket the day before. Travel days count as travel days.",
                 "transit": "🚤 Jungutbatu pier",
                 "emoji": "⛵"
             },
             {
-                "time": "5:00 PM",
-                "period": "afternoon",
-                "place": "Gili Trawangan check-in & cidomo ride",
-                "detail": "No cars, no motorbikes — just bicycles and horse-drawn cidomo carts. Drop bags, grab a bike, head to the west side.",
-                "transit": "🐴 Cidomo from Trawangan jetty",
-                "emoji": "🚲"
-            },
-            {
-                "time": "6:00 PM",
+                "time": "Day 4 / sunset",
                 "period": "evening",
-                "place": "Sunset at Gili Trawangan west beach",
-                "detail": "The classic Trawangan moment: beanbag, cold Bintang, Mt Agung silhouette across the channel as the sun drops behind Bali.",
-                "transit": "🚲 15 min bike around the island",
+                "place": "Gili Trawangan sunset + night market",
+                "detail": "No cars, no motorbikes — bikes and cidomo carts only. West-side beanbag for sunset over Bali's Mt Agung, then point-and-grill seafood at the night market.",
+                "transit": "🚲 Bike around the island",
                 "emoji": "🌅"
             },
             {
-                "time": "7:30 PM",
-                "period": "food-stop",
-                "place": "🐟 Dinner: Gili night market",
-                "detail": "Point-and-grill seafood in the main square: snapper, mahi, prawns, calamari — they grill it in front of you with sambal matah and rice.",
-                "transit": "🚲 5 min ride back to east side",
-                "emoji": "🔥"
+                "time": "Day 5 / AM",
+                "period": "morning",
+                "place": "Gili Meno Turtle Point + statues",
+                "detail": "Public boat or island-hopper. Snorkel the west side for green sea turtles and Jason deCaires Taylor's 'Nest' — 48 underwater statues being colonized by coral.",
+                "transit": "🚤 Island-hopper from Trawangan",
+                "emoji": "🐢"
             },
             {
-                "time": "9:30 PM",
+                "time": "Day 5 / PM",
+                "period": "afternoon",
+                "place": "Gili Air for the night",
+                "detail": "Hop to Air for the goldilocks Gili: sleepy enough for stars, alive enough for a beach bar. Snorkel straight off the east beach in the morning.",
+                "transit": "🚤 Public boat Meno → Air",
+                "emoji": "🐠"
+            },
+            {
+                "time": "Day 6-7 / buffer",
                 "period": "evening",
-                "place": "Beach bar hop or early night",
-                "detail": "Reggae bar on the strip or a quiet swing-bar by the water. Crash early — tomorrow snorkel the turtle reef off Gili Meno at sunrise.",
-                "transit": "🚶 Walk the main strip",
-                "emoji": "🍹"
+                "place": "Travel day back to Bali (don't underestimate)",
+                "detail": "Fast boat Gili → Padangbai or Serangan (2-2.5 hrs) then car to your next stop. Build a full day for this and a buffer day before any flight home. Weather cancels boats.",
+                "transit": "🚤 + 🚗",
+                "emoji": "🧳"
             }
         ]
     }

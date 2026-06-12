@@ -20,6 +20,9 @@ Bali is not one place but a whole island of contrasts: spiritual temples draped 
 | Nusa Dua | Resort, calm | Luxury resorts, water sports, clean beaches | Taxi/Grab from airport (20 min) |
 | Amed | Quiet, snorkeling | Diving, Mount Agung views, black sand beach | Drive from Ubud (2.5 hours) |
 | Sanur | Relaxed, family | Sunrise beach, cycling, day trips to Nusa islands | Taxi/Grab from airport (25 min) |
+| Ungasan | Clifftop, hidden coves | Karma Beach, Sundays Beach Club, luxury villas above the surf | Taxi/Grab from airport (40 min) |
+| Nusa Lembongan | Slow island, snorkel | Devil's Tear, Dream Beach, mangroves, no real traffic | Fast boat from Sanur (30-40 min) |
+| Gili Islands (Lombok) | Car-free escape | Trawangan (party + sunsets), Meno (quiet honeymoon), Air (best snorkeling) | Fast boat from Sanur, Padangbai or Lembongan (1.5-2 hrs) |
 
 ## Food
 
@@ -35,6 +38,7 @@ Bali is not one place but a whole island of contrasts: spiritual temples draped 
 | Warung Murah | Balinese | Seminyak | $ | A hidden local warung behind the tourist strip. Authentic nasi campur for a fraction of restaurant prices. | Nasi campur, ayam betutu |
 | Single Fin | Beach bar/food | Uluwatu | $$ | Clifftop bar overlooking the surf break. Sunday sessions are legendary. Food is solid, views are the star. | Fish tacos, cold Bintang, sunset views |
 | Milk and Madu | Brunch | Canggu/Ubud | $$ | Excellent all-day breakfast with strong coffee. The ricotta hotcakes are a cult favorite. | Ricotta hotcakes, cold brew, big breakfast |
+| The Lazy Cats Café | Vegetarian | Ubud | $$ | Bright veg-forward café on Hanoman with rotating curries and pretty bowls. Easy second-day Ubud lunch. | Sayur lodeh curry, fresh juice |
 
 ## Landmarks and activities
 
@@ -50,6 +54,14 @@ Bali is not one place but a whole island of contrasts: spiritual temples draped 
 | Tanah Lot Temple | Culture | Tabanan | $ | 1-2 hours | Sea temple on a rock formation. Accessible at low tide. Stunning at sunset. 45 minutes from Seminyak. |
 | Bali Swing | Adventure | Ubud | $$ | 1-2 hours | Swing over a jungle valley for the ultimate photo. Multiple locations around Ubud. |
 | Sidemen Valley | Nature | East Bali | Free-$ | Half day | Peaceful alternative to Ubud. Rice terraces, Mount Agung views, traditional villages. |
+| Kuta Beach | Beach | Kuta | Free | Half day | The classic Bali starter beach: long stretch of sand, beginner-friendly surf, sunset crowds with cold Bintangs. |
+| Sundays Beach Club | Beach club | Ungasan | $$-$$$ | Half day | Hidden white-sand cove below the Ungasan cliffs (inclinator down). Snorkel gear, kayaks, beach bonfire at sunset. |
+| Devil's Tear | Nature | Nusa Lembongan | Free | 1-2 hours | Lembongan's signature cliff blowhole: waves explode through the rocks just before sunset. Pair with Dream Beach next door. |
+| Kelingking Beach | Beach | Nusa Penida | $ | 2-4 hours | The T-Rex shaped cliff: Bali's most-photographed coastline. The viewpoint is free; the brutal staircase down to the sand takes ~1 hour each way. |
+| Gili Trawangan | Beach | Gili Islands, Lombok | $$ | 1-2 days | The biggest, busiest Gili. No cars, no motorbikes — just bikes and cidomo carts. Sunset on the west side, night market on the east. |
+| Gili Meno | Beach | Gili Islands, Lombok | $ | Day trip | The quietest of the three Gilis. Salt lake in the middle, the famous underwater statues offshore, barely any nightlife. Honeymoon island. |
+| Gili Meno Turtle Point & Statues | Snorkel | Gili Islands, Lombok | $ | 2-3 hours | Snorkel off Meno's west side to see green sea turtles and Jason deCaires Taylor's 'Nest' — a ring of 48 underwater human statues being colonized by coral. |
+| Gili Air | Beach | Gili Islands, Lombok | $-$$ | 1-2 days | Goldilocks Gili: sleepy enough to feel remote, alive enough for beach bars and yoga. Best snorkeling straight off the east beach. |
 
 ## Nightlife
 
@@ -82,4 +94,5 @@ Bali is not one place but a whole island of contrasts: spiritual temples draped 
 | Delicious! | Enak! | EH-nahk |
 | Where is...? | Di mana...? | dee MAH-nah |
 | Beautiful | Bagus | BAH-goos |
+| Thank you (Balinese) | Suksma | SOOK-smah |
 | No thank you | Tidak, terima kasih | TEE-dahk teh-REE-mah KAH-see |
