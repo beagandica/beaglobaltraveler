@@ -382,7 +382,7 @@
     <p class="subtitle">Your AI travel companion's guide to the soul of South Korea</p>
     <div class="stats">
         <div class="stat">
-            <div class="stat-number">8</div>
+            <div class="stat-number">9</div>
             <div class="stat-label">Neighborhoods</div>
         </div>
         <div class="stat">
@@ -390,7 +390,7 @@
             <div class="stat-label">Restaurants</div>
         </div>
         <div class="stat">
-            <div class="stat-number">10</div>
+            <div class="stat-number">14</div>
             <div class="stat-label">Landmarks</div>
         </div>
         <div class="stat">
@@ -496,7 +496,11 @@ const landmarkData = [
     { name: "Lotte World Tower", cat: "Views", hood: "Songpa", budget: "$$$", time: "1-2 hours", desc: "555 meters high, glass floor sky deck. For the brave ones.", lat: 37.5126, lng: 127.1026, emoji: "🏙️" },
     { name: "War Memorial of Korea", cat: "Museum", hood: "Itaewon", budget: "Free", time: "2-3 hours", desc: "Powerful, well-done museum. The outdoor exhibits are impressive.", lat: 37.5360, lng: 126.9772, emoji: "🎖️" },
     { name: "Dongdaemun Design Plaza (DDP)", cat: "Architecture", hood: "Dongdaemun", budget: "Free", time: "1 hour", desc: "Zaha Hadid's alien spaceship building. Night markets outside on weekends.", lat: 37.5673, lng: 127.0095, emoji: "🛸" },
-    { name: "Namsan Cable Car", cat: "Scenic", hood: "Namsan", budget: "$$", time: "30 min", desc: "Ride up to N Seoul Tower. Better than hiking if you're short on time.", lat: 37.5562, lng: 126.9816, emoji: "🚡" }
+    { name: "Namsan Cable Car", cat: "Scenic", hood: "Namsan", budget: "$$", time: "30 min", desc: "Ride up to N Seoul Tower. Better than hiking if you're short on time.", lat: 37.5562, lng: 126.9816, emoji: "🚡" },
+    { name: "DMZ / JSA Day Trip 판문점", cat: "History", hood: "Paju", budget: "$$$", time: "Full day", desc: "Step into the Joint Security Area where North and South meet. Book a UN-cleared tour weeks ahead (passport required, dress code enforced).", lat: 37.9558, lng: 126.6772, emoji: "🪖" },
+    { name: "Imjingak Park 임진각", cat: "History", hood: "Paju", budget: "Free", time: "1-2 hours", desc: "Gateway to the DMZ: Freedom Bridge, the rusted Korean War locomotive, ribbon-tied fences, and the eerie 'Mangbaedan' altar for separated families.", lat: 37.8957, lng: 126.7372, emoji: "🕊️" },
+    { name: "Third Infiltration Tunnel 제3땅굴", cat: "History", hood: "Paju", budget: "$$", time: "1 hour", desc: "Walk 73m underground into a North Korean invasion tunnel discovered in 1978. Helmets required, no cameras inside. Sobering and surreal.", lat: 37.9333, lng: 126.6803, emoji: "⛏️" },
+    { name: "Dora Observatory 도라전망대", cat: "Views", hood: "Paju", budget: "$", time: "30-45 min", desc: "Telescopes pointed straight into Kaesong, North Korea. On a clear day you can see the propaganda village and the world's tallest flagpole.", lat: 37.8849, lng: 126.7242, emoji: "🔭" }
 ];
 
 const nightlifeData = [
@@ -550,7 +554,7 @@ const itineraryData = [
 // ============================================================
 // MAP
 // ============================================================
-const map = L.map('map', { scrollWheelZoom: true }).setView([37.5665, 126.9780], 12);
+const map = L.map('map', { scrollWheelZoom: true }).setView([37.75, 126.93], 10);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     maxZoom: 19

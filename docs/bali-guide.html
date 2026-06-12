@@ -339,18 +339,18 @@
 
 <div class="hero">
     <h1>✈️ beaglobaltraveler | Bali</h1>
-    <p class="subtitle">Your AI travel companion's guide to temples, rice terraces, and island magic</p>
+    <p class="subtitle">Your AI travel companion's guide to temples, rice terraces, island magic, and the Gili escape</p>
     <div class="stats">
         <div class="stat">
-            <div class="stat-number">8</div>
+            <div class="stat-number">11</div>
             <div class="stat-label">Neighborhoods</div>
         </div>
         <div class="stat">
-            <div class="stat-number">10</div>
+            <div class="stat-number">11</div>
             <div class="stat-label">Restaurants</div>
         </div>
         <div class="stat">
-            <div class="stat-number">10</div>
+            <div class="stat-number">16</div>
             <div class="stat-label">Landmarks</div>
         </div>
         <div class="stat">
@@ -533,6 +533,17 @@ const foodData = [
         "lat": -8.646,
         "lng": 115.135,
         "emoji": "🥞"
+    },
+    {
+        "name": "The Lazy Cats Café",
+        "cat": "Vegetarian",
+        "hood": "Ubud",
+        "budget": "$$",
+        "desc": "Bright veg-forward café on Hanoman with rotating curries and pretty bowls. Easy second-day Ubud lunch.",
+        "mustOrder": "Sayur lodeh curry, fresh juice",
+        "lat": -8.516,
+        "lng": 115.263,
+        "emoji": "🥗"
     }
 ];
 
@@ -646,6 +657,72 @@ const landmarkData = [
         "lat": -8.47,
         "lng": 115.47,
         "emoji": "🌾"
+    },
+    {
+        "name": "Kuta Beach",
+        "cat": "Beach",
+        "hood": "Kuta",
+        "budget": "Free",
+        "time": "Half day",
+        "desc": "The classic Bali starter beach: long stretch of sand, beginner-friendly surf, sunset crowds with cold Bintangs.",
+        "lat": -8.7184,
+        "lng": 115.1686,
+        "emoji": "🏖️"
+    },
+    {
+        "name": "Sundays Beach Club",
+        "cat": "Beach club",
+        "hood": "Ungasan",
+        "budget": "$$-$$$",
+        "time": "Half day",
+        "desc": "Hidden white-sand cove below the Ungasan cliffs (inclinator down). Snorkel gear, kayaks, beach bonfire at sunset.",
+        "lat": -8.8362,
+        "lng": 115.1466,
+        "emoji": "🌅"
+    },
+    {
+        "name": "Devil's Tear",
+        "cat": "Nature",
+        "hood": "Nusa Lembongan",
+        "budget": "Free",
+        "time": "1-2 hours",
+        "desc": "Lembongan's signature cliff blowhole: waves explode through the rocks just before sunset. Pair with Dream Beach next door.",
+        "lat": -8.6939,
+        "lng": 115.4358,
+        "emoji": "🌊"
+    },
+    {
+        "name": "Gili Trawangan",
+        "cat": "Beach",
+        "hood": "Gili Islands, Lombok",
+        "budget": "$$",
+        "time": "1-2 days",
+        "desc": "The biggest, busiest Gili. No cars, no motorbikes - just bikes and cidomo carts. Sunset on the west side, night market on the east.",
+        "lat": -8.3502,
+        "lng": 116.0411,
+        "emoji": "🚲"
+    },
+    {
+        "name": "Gili Meno",
+        "cat": "Beach",
+        "hood": "Gili Islands, Lombok",
+        "budget": "$",
+        "time": "Day trip",
+        "desc": "The quietest of the three Gilis. Salt lake in the middle, the famous underwater statues offshore, barely any nightlife. Honeymoon island.",
+        "lat": -8.3447,
+        "lng": 116.0571,
+        "emoji": "🧜"
+    },
+    {
+        "name": "Gili Air",
+        "cat": "Beach",
+        "hood": "Gili Islands, Lombok",
+        "budget": "$-$$",
+        "time": "1-2 days",
+        "desc": "Goldilocks Gili: sleepy enough to feel remote, alive enough for beach bars and yoga. Best snorkeling straight off the east beach.",
+        "lat": -8.3617,
+        "lng": 116.0828,
+        "emoji": "🐢"
     }
 ];
 
@@ -894,7 +971,7 @@ const itineraryData = [
     }
 ];
 
-const map = L.map('map', { scrollWheelZoom: true }).setView([-8.55, 115.25], 10);
+const map = L.map('map', { scrollWheelZoom: true }).setView([-8.55, 115.6], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
     maxZoom: 19
