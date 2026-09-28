@@ -20,6 +20,7 @@
     <meta property="og:url" content="https://beagandica.github.io/beaglobaltraveler/seoul-guide.html">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="map.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -469,6 +470,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
 <script>
 // ============================================================
 // DATA
@@ -499,7 +501,7 @@ const landmarkData = [
     { name: "Namsan Cable Car", cat: "Scenic", hood: "Namsan", budget: "$$", time: "30 min", desc: "Ride up to N Seoul Tower. Better than hiking if you're short on time.", lat: 37.5562, lng: 126.9816, emoji: "🚡" },
     { name: "DMZ / JSA Day Trip 판문점", cat: "Culture", hood: "Paju", budget: "$$$", time: "Full day", desc: "Step into the Joint Security Area where North and South meet. Book a UN-cleared tour weeks ahead (passport required, dress code enforced).", lat: 37.9558, lng: 126.6772, emoji: "🪖" },
     { name: "Imjingak Park 임진각", cat: "Culture", hood: "Paju", budget: "Free", time: "1-2 hours", desc: "Gateway to the DMZ: Freedom Bridge, the rusted Korean War locomotive, ribbon-tied fences, and the eerie 'Mangbaedan' altar for separated families.", lat: 37.8957, lng: 126.7372, emoji: "🕊️" },
-    { name: "Third Infiltration Tunnel 제3땅굴", cat: "Culture", hood: "Paju", budget: "$$", time: "1 hour", desc: "Walk 73m underground into a North Korean invasion tunnel discovered in 1978. Helmets required, no cameras inside. Sobering and surreal.", lat: 37.9333, lng: 126.6803, emoji: "⛏️" }
+    { name: "Third Infiltration Tunnel 제3땅굴", cat: "Culture", hood: "Paju", budget: "$$", time: "1 hour", desc: "Walk 73m underground into a North Korean invasion tunnel discovered in 1978. Helmets required, no cameras inside. Sobering and surreal.", lat: 37.9333, lng: 126.6803, emoji: "⛏️" },
     { name: "Dora Observatory 도라전망대", cat: "Views", hood: "Paju", budget: "$", time: "30-45 min", desc: "Telescopes pointed straight into Kaesong, North Korea. On a clear day you can see the propaganda village and the world's tallest flagpole.", lat: 37.8849, lng: 126.7242, emoji: "🔭" }
 ];
 
@@ -569,10 +571,7 @@ const itineraryData = [
 // MAP
 // ============================================================
 const map = L.map('map', { scrollWheelZoom: true }).setView([37.75, 126.93], 10);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 19
-}).addTo(map);
+addTravelBasemap(map);
 
 function addMarkers(data, color, group) {
     data.forEach(item => {

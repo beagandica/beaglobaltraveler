@@ -58,6 +58,42 @@ Open any guide in `docs/` (for example `docs/seoul-guide.html` or `docs/bali-gui
 - 📅 2-day visual itinerary timeline
 - 💬 Korean survival phrases
 
+### Website maps and destination lists
+
+Serve the site locally from the repository root:
+
+```powershell
+python -m http.server 8000 --directory docs --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8000/`.
+Use an HTTP server rather than opening HTML files directly so map requests include a browser referrer.
+All maps share `docs/map.js` and `docs/map.css`, using OpenStreetMap standard tiles with no API key.
+Dark styling applies only to the tiles, preserving marker and control colors.
+Keep visible OpenStreetMap attribution and normal browser caching.
+Do not add tile prefetching or offline downloads; follow the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
+Tile availability is best-effort; a visible notice reports failed tile requests.
+
+The homepage region cards expand by click, Enter, or Space into alphabetical destination lists.
+`docs\travel-data.js` is the shared source for map pins, region lists, country and territory counts, and the homepage and About page totals.
+Its grouping follows Bea's personal travel list, not a sovereign-state inventory: England and Scotland are separate entries, Aruba is in the country count, and Sint Maarten is in the territory list.
+Countries and additional territories are separate arrays, so territories are not added to the country count.
+Nested cities and stops are not additional country entries.
+The confirmed totals are 76 countries, 6 additional territories, 82 destinations, 8 regions, and 6 continents.
+When changing the data, also update the static HTML fallback text and social metadata; the count regression tests check those snapshots.
+
+### Website regression tests
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m playwright install chromium
+python -m pytest tests -q
+```
+
+The suite checks every guide map, attribution, failed tiles, region list contents, keyboard access, narrow screens, and existing guide links.
+It downloads the pinned Leaflet JavaScript and CSS once per run; network access to the Leaflet CDN is required.
+Map tiles are mocked to avoid sending automated browsing traffic to the community tile servers.
+
 ## Built with
 
 - [GitHub Copilot](https://github.com/features/copilot) agent mode

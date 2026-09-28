@@ -15,6 +15,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="favicon-96.png">
     <title>✈️ beaglobaltraveler | Singapore Travel Guide</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="map.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1117; color: #e4e4e7; line-height: 1.6; }
@@ -161,6 +162,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
 <script>
 const foodData = [
     { name: "Liao Fan Soya Sauce Chicken Rice", cat: "Hawker", hood: "Chinatown", budget: "$", desc: "The world's cheapest Michelin-starred meal. Tender soy sauce chicken over fragrant rice for about $3.", mustOrder: "Soya sauce chicken rice", lat: 1.2816, lng: 103.8448, emoji: "🍗" },
@@ -355,10 +357,7 @@ function addMarkers(map) {
 
 function initMap() {
     const map = L.map('map', { scrollWheelZoom: true }).setView([1.3521, 103.8198], 12);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-        subdomains: 'abcd', maxZoom: 19
-    }).addTo(map);
+    addTravelBasemap(map);
     addMarkers(map);
     window.sgMap = map;
 }
