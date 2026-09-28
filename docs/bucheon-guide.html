@@ -20,6 +20,7 @@
     <meta property="og:url" content="https://beagandica.github.io/beaglobaltraveler/bucheon-guide.html">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="map.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -469,6 +470,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
 <script>
 // ============================================================
 // DATA
@@ -534,10 +536,7 @@ const itineraryData = [
 // MAP
 // ============================================================
 const map = L.map('map', { scrollWheelZoom: true }).setView([37.5036, 126.7660], 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 19
-}).addTo(map);
+addTravelBasemap(map);
 
 function addMarkers(data, color, group) {
     data.forEach(item => {

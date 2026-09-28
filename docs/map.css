@@ -1,0 +1,18 @@
+/* Filter only the basemap, leaving pins, popups, and controls in full color. */
+.travel-basemap {
+    filter: grayscale(1) invert(1) brightness(.8) contrast(.9);
+}
+
+.map-status {
+    max-width: min(260px, 60vw);
+    padding: 10px 12px;
+    border: 1px solid #eab308;
+    border-radius: 8px;
+    background: #0f1117;
+    color: #f1f5f9;
+    font: 13px/1.5 'Segoe UI', sans-serif;
+}
+
+.map-status[hidden] {
+    display: none;
+}

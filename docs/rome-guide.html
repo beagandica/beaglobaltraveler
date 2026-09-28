@@ -15,6 +15,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="favicon-96.png">
     <title>✈️ beaglobaltraveler | Rome Travel Guide</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="map.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -422,6 +423,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
 <script>
 const foodData = [
     {
@@ -911,10 +913,7 @@ const itineraryData = [
 ];
 
 const map = L.map('map', { scrollWheelZoom: true }).setView([41.9028, 12.4964], 13);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 19
-}).addTo(map);
+addTravelBasemap(map);
 
 function addMarkers(data, color) {
     data.forEach(item => {

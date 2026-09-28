@@ -15,6 +15,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="favicon-96.png">
     <title>✈️ beaglobaltraveler | New York Travel Guide</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="map.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1117; color: #e4e4e7; line-height: 1.6; }
@@ -165,6 +166,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="map.js"></script>
 <script>
 const foodData = [
     { name: "Joe's Pizza", cat: "Pizza", hood: "Greenwich Village", budget: "$", desc: "The quintessential New York slice. Thin, foldable, perfect. Cash only, no-frills, exactly right.", mustOrder: "Plain cheese slice", lat: 40.7308, lng: -74.0020, emoji: "🍕" },
@@ -356,9 +358,7 @@ function addMarkers(map) {
 
 function initMap() {
     const map = L.map('map', { scrollWheelZoom: true }).setView([40.7128, -74.0060], 12);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
-    }).addTo(map);
+    addTravelBasemap(map);
     addMarkers(map);
     window.cityMap = map;
 }
